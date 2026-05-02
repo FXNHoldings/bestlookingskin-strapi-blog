@@ -1,32 +1,9 @@
 import Link from 'next/link';
-import { SITE } from '@/lib/site';
+import { SITE, SECTIONS } from '@/lib/site';
 
-/* Top-bar nav modeled on https://bestlooking.skin/.
-   The 4 editorial category links go to our real /<slug>/ pages.
-   The 13 product-type links don't have a Strapi taxonomy yet, so they
-   route to /search?q=<term> (returns relevant articles). Swap to real
-   product-category routes when that taxonomy lands. */
-type NavItem = { label: string; href: string };
-
-const NAV: NavItem[] = [
-  { label: 'Acne Treatment',      href: '/search?q=acne+treatment' },
-  { label: 'Moisturizer',         href: '/search?q=moisturizer' },
-  { label: 'Eye & Lip Care',      href: '/search?q=eye+lip+care' },
-  { label: 'Vitamin C',           href: '/search?q=vitamin+c' },
-  { label: 'Treatments & Serums', href: '/search?q=serum' },
-  { label: 'Hyaluronic Acid',     href: '/search?q=hyaluronic+acid' },
-  { label: 'Anti-Aging',          href: '/search?q=anti-aging' },
-  { label: 'Salicylic Acid',      href: '/search?q=salicylic+acid' },
-  { label: 'Cleanser',            href: '/search?q=cleanser' },
-  { label: 'Exfoliant',           href: '/search?q=exfoliant' },
-  { label: 'Toner',               href: '/search?q=toner' },
-  { label: 'Sunscreen',           href: '/search?q=sunscreen' },
-  { label: 'Retinol',             href: '/search?q=retinol' },
-  { label: 'How-to Guides',       href: '/skincare-how-to-guides' },
-  { label: 'Product Reviews',     href: '/skincare-reviews-path-to-glowing-skin' },
-  { label: 'Product Comparisons', href: '/best-product-comparisons' },
-  { label: 'Informative Articles',href: '/essential-guide-to-informative-articles' },
-];
+/* Top-bar nav — driven by the post categories (lib/site.ts SECTIONS),
+   so any change to the section list flows through to the nav. */
+const NAV = SECTIONS.map((s) => ({ label: s.title, href: `/${s.slug}` }));
 
 export default function Header() {
   return (

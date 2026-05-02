@@ -35,6 +35,8 @@ html, body {
   color: theme('colors.ink');
   font-family: var(--font-urbanist);
   font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
 }
 
 /* Site-wide h1/h2/h3 sizing. Uses !important to override per-component

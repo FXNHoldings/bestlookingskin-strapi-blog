@@ -3,6 +3,7 @@ import { listPosts, type BlsPost } from '@/lib/strapi';
 import { SECTIONS, SITE } from '@/lib/site';
 import { fmtDate, firstImageUrl, postPath } from '@/lib/format';
 import PostCard from '@/components/PostCard';
+import ArticlesCarousel from '@/components/ArticlesCarousel';
 
 export const revalidate = 60;
 
@@ -90,13 +91,26 @@ export default async function HomePage() {
 
       <Hero />
       <ProductSelectionTools />
+      <CategoryShowcase />
+      <WelcomeIntro />
       <LatestArrivals posts={latest.slice(0, 8)} />
-      {SKINCARE_TYPES.map((type, i) => (
+      <CommitmentBlock />
+      {/* Render Moisturizer / Serum / Eye Cream first (indexes 0-2)… */}
+      {SKINCARE_TYPES.slice(0, 3).map((type, i) => (
         <SkincareTypeSection key={type.label} label={type.label} query={type.query} posts={perSkincareType[i] ?? []} alt={i % 2 === 1} />
       ))}
+      {/* …then the "Our Goal" article-list block… */}
+      <OurGoalSection posts={latest.slice(0, 12)} />
+      {/* …then Anti-Aging (index 3) and the rest. */}
+      {SKINCARE_TYPES.slice(3).map((type, i) => {
+        const idx = i + 3;
+        return (
+          <SkincareTypeSection key={type.label} label={type.label} query={type.query} posts={perSkincareType[idx] ?? []} alt={idx % 2 === 1} />
+        );
+      })}
       {reviews.length > 0 && <ProductReviews posts={reviews.slice(0, 6)} />}
-      <OurCommitment />
-      {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 6)} />}
+      <FirstStepSection />
+      {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 8)} />}
       <ContactStrip />
     </div>
   );
@@ -107,21 +121,18 @@ export default async function HomePage() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-paper" data-testid="home-hero">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
-        <div className="text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">Welcome to</p>
-          <h1 className="mt-4 font-display font-black tracking-tight text-ink">
-            {SITE.name}
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
+        {/* Left column — heading + intro */}
+        <div>
+          <h1 className="font-display font-bold tracking-tight text-ink">
+            Your Guide to the Best Skincare.
           </h1>
-          <h2 className="mx-auto mt-6 max-w-3xl text-balance font-display font-bold tracking-tight text-ink">
-            Your Guide to the Best Skincare Products on the Market.
-          </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-7 text-ink/70 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-7 text-ink/70 sm:text-lg">
             {SITE.name} is your go-to destination for comprehensive guidance on achieving healthy,
             radiant, glowing skin. Our mission is to provide you with the most current and accurate
             information about top-tier skincare products available today.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/best-product-comparisons"
               className="inline-flex items-center rounded-full bg-primary px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-white transition hover:bg-primary-emphasis"
@@ -135,6 +146,17 @@ function Hero() {
               Read reviews
             </Link>
           </div>
+        </div>
+        {/* Right column — hero product banner */}
+        <div className="relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero-banner-products.png"
+            alt="Curated skincare products"
+            width={900}
+            height={675}
+            className="mx-auto h-auto w-full max-w-xl object-contain mix-blend-multiply"
+          />
         </div>
       </div>
     </section>
@@ -179,6 +201,99 @@ function ProductSelectionTools() {
   );
 }
 
+/* ---------- CATEGORY SHOWCASE — bento grid (Moisturizer / Reviews / Serum / Eye Cream) ---------- */
+
+const SHOWCASE: { label: string; href: string; img: string; span: string }[] = [
+  {
+    label: 'Moisturizer',
+    href: '/search?q=moisturizer',
+    img: '/showcase-moisturizer.jpg',
+    span: 'col-span-12 lg:col-span-6 row-span-2 aspect-[4/5] lg:aspect-auto lg:min-h-[600px]',
+  },
+  {
+    label: 'Product Reviews',
+    href: '/skincare-reviews-path-to-glowing-skin',
+    img: '/showcase-reviews.jpg',
+    span: 'col-span-12 lg:col-span-6 aspect-[16/8] lg:aspect-auto lg:min-h-[290px]',
+  },
+  {
+    label: 'Serum',
+    href: '/search?q=serum',
+    img: '/showcase-serum.jpg',
+    span: 'col-span-6 lg:col-span-3 aspect-square lg:aspect-auto lg:min-h-[290px]',
+  },
+  {
+    label: 'Eye Cream',
+    href: '/search?q=eye+cream',
+    img: '/showcase-eyecream.jpg',
+    span: 'col-span-6 lg:col-span-3 aspect-square lg:aspect-auto lg:min-h-[290px]',
+  },
+];
+
+function CategoryShowcase() {
+  return (
+    <section className="bg-paper py-14" data-testid="category-showcase">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid grid-cols-12 gap-4">
+          {SHOWCASE.map((tile) => (
+            <Link
+              key={tile.label}
+              href={tile.href}
+              className={`group relative overflow-hidden rounded-2xl ${tile.span}`}
+              data-testid={`showcase-${tile.label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={tile.img}
+                alt={tile.label}
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+              />
+              {/* Subtle dark gradient at the bottom for label legibility */}
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent" aria-hidden />
+              <span className="absolute bottom-5 left-6 font-display text-2xl font-bold text-white drop-shadow-md transition group-hover:translate-x-1">
+                {tile.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- WELCOME INTRO (mission block, copy from bestlooking.skin) ---------- */
+
+function WelcomeIntro() {
+  return (
+    <section className="bg-paper py-16 sm:py-20" data-testid="welcome-intro">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
+        <div>
+          <h2 className="font-display font-extrabold leading-[1.05] tracking-tight text-ink">
+            Welcome to<br />bestlooking.skin
+          </h2>
+        </div>
+        <div className="space-y-6 text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
+          <p>
+            Welcome to BestLooking.Skin — your go-to destination for comprehensive guidance on
+            achieving healthy, radiant and glowing skin. Our mission is to provide you with the most
+            current and accurate information about top-tier skincare products available today. We
+            are committed to helping you discover high-quality skincare products at affordable
+            prices.
+          </p>
+          <p>
+            Our team, comprised of seasoned skincare experts, diligently conducts rigorous research,
+            comprehensive product comparisons and detailed reviews. Our aim is to empower you with
+            the knowledge you need to make informed decisions about your skincare routine. We
+            recognize that skincare is a personal journey, not a one-size-fits-all approach.
+            Therefore, we strive to cover a diverse range of products to cater to various skin types
+            and concerns.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- LATEST ARRIVALS ---------- */
 
 function LatestArrivals({ posts }: { posts: BlsPost[] }) {
@@ -199,6 +314,41 @@ function LatestArrivals({ posts }: { posts: BlsPost[] }) {
           {posts.slice(0, 4).map((p) => (
             <PostCard key={p.id} post={p} variant="tile" />
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- COMMITMENT BLOCK (editorial copy from bestlooking.skin) ---------- */
+
+function CommitmentBlock() {
+  return (
+    <section className="bg-paper py-16 sm:py-20" data-testid="commitment-block">
+      <div className="mx-auto max-w-7xl px-6">
+        <h2 className="font-display font-extrabold tracking-tight text-ink">
+          Our Commitment
+        </h2>
+        <div className="mt-8 space-y-6 text-base leading-7 text-ink/80 sm:text-lg sm:leading-8">
+          <p>
+            At BestLooking.Skin, we are committed to inclusivity. In addition to product reviews and
+            recommendations, we offer informative articles and easy-to-follow how-to guides. Whether
+            you’re a skincare novice or an expert, we have something for everyone, ensuring no one
+            is left out in their skincare journey.
+          </p>
+          <p>
+            We regularly update our ‘Top Rated Products’ section, showcasing the best skincare
+            products as recommended by our readers and expert team. Thank you for choosing
+            BestLooking.Skin. BestLooking.Skin is your trusted ally in your skincare journey. We
+            hope you find our content helpful, enjoyable and inspiring as you work towards achieving
+            the best-looking skin. Welcome to BestLooking.Skin — your premier destination and
+            comprehensive guide to achieving healthy, radiant and glowing skin. Our mission, our
+            commitment, is to provide you with the most exhaustive, current and accurate
+            information about the finest skincare products available on the market today. We are
+            unwavering in our dedication to helping you discover the highest quality skincare
+            products at the most affordable prices, ensuring you do not have to compromise on your
+            skincare regimen.
+          </p>
         </div>
       </div>
     </section>
@@ -246,6 +396,74 @@ function SkincareTypeSection({
   );
 }
 
+/* ---------- OUR GOAL — research blurb + 2-column article links ---------- */
+
+function OurGoalSection({ posts }: { posts: BlsPost[] }) {
+  // Two even columns of links — split posts in half
+  const half = Math.ceil(posts.length / 2);
+  const colA = posts.slice(0, half);
+  const colB = posts.slice(half, half * 2);
+  return (
+    <section className="bg-paper py-16 sm:py-20" data-testid="our-goal">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
+          {/* Left — heading + body */}
+          <div>
+            <h2 className="font-display font-extrabold tracking-tight text-ink">Our Goal</h2>
+            <p className="mt-5 text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
+              We conduct rigorous and thorough research, comprehensive product comparisons, and
+              detailed reviews.
+            </p>
+            <p className="mt-5 text-base leading-7 text-ink/75">
+              Our goal is to equip you with all the necessary information you need to make an
+              informed and wise decision about your skincare routine. We fully understand that
+              skincare is not a ‘one-size-fits-all’ scenario — what might work for one individual
+              may not work for another. This is precisely why we endeavor to cover a wide array of
+              products, ensuring we cater to a multitude of skin types and address various skin
+              concerns so everyone can find something suitable.
+            </p>
+          </div>
+
+          {/* Right — intro paragraph above two columns of post links */}
+          <div>
+            <p className="text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
+              In addition to our product reviews and recommendations, we offer a plethora of
+              informative articles and easy-to-follow how-to guides. These resources are designed to
+              help you understand the intricacies of skincare, learn how to effectively use
+              different products, and address specific skin issues. Whether you’re a skincare novice
+              just beginning your journey or a seasoned expert in search of new insights, we have a
+              little something for everyone at BestLooking.Skin.
+            </p>
+            <div className="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2">
+              <GoalLinkColumn posts={colA} />
+              <GoalLinkColumn posts={colB} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GoalLinkColumn({ posts }: { posts: BlsPost[] }) {
+  if (posts.length === 0) return <div />;
+  return (
+    <ul className="space-y-4 text-base leading-snug">
+      {posts.map((p) => (
+        <li key={p.id} className="flex items-start gap-3">
+          <span aria-hidden className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold leading-none text-primary">+</span>
+          <Link
+            href={postPath(p)}
+            className="font-medium text-[#1556ee] transition hover:text-primary hover:underline"
+          >
+            {p.title}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /* ---------- PRODUCT REVIEWS — feature + 4-up ---------- */
 
 function ProductReviews({ posts }: { posts: BlsPost[] }) {
@@ -272,36 +490,26 @@ function ProductReviews({ posts }: { posts: BlsPost[] }) {
   );
 }
 
-/* ---------- OUR COMMITMENT — mission block ---------- */
+/* ---------- FIRST STEP TO GREAT SKIN — editorial closer ---------- */
 
-function OurCommitment() {
+function FirstStepSection() {
   return (
-    <section className="bg-[#111111] py-20 text-white" data-testid="our-commitment">
+    <section className="bg-paper py-16 sm:py-20" data-testid="first-step">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary/90">Our Commitment</p>
-          <h2 className="mt-4 font-display font-bold tracking-tight">Our Goal</h2>
-          <p className="mt-6 text-base leading-7 text-white/80 sm:text-lg">
-            Our team — seasoned skincare experts — diligently conducts rigorous research, comprehensive
-            product comparisons and detailed reviews. The aim is to empower you with the knowledge
-            you need to make informed decisions about your skincare routine. Skincare is a personal
-            journey, not a one-size-fits-all approach, so we strive to cover a diverse range of
-            products to cater to various skin types and concerns.
+        <h2 className="font-display font-extrabold tracking-tight text-ink">First Step to Great Skin</h2>
+        <div className="mt-8 space-y-6 text-base leading-7 text-ink/80 sm:text-lg sm:leading-8">
+          <p>
+            Moreover, we regularly refresh our ‘Top Rated Products’ section, where we showcase the
+            absolute crème de la crème in skincare as voted by our dedicated readers and our expert
+            team. This section acts as a quick reference guide for anyone looking for the best
+            skincare products as per our recommendations.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/about"
-              className="inline-flex items-center rounded-full bg-primary px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-white transition hover:bg-primary-emphasis"
-            >
-              About us
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center rounded-full border border-white/20 px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-white transition hover:border-primary"
-            >
-              Contact
-            </Link>
-          </div>
+          <p>
+            We want to express our heartfelt gratitude for choosing BestLooking.Skin. BestLooking.Skin
+            is your trusted ally and resource in your skincare journey. We hope that you find our
+            content not only helpful but also enjoyable and inspiring. We’re truly honored to be a
+            part of your journey towards achieving the best-looking skin.
+          </p>
         </div>
       </div>
     </section>
@@ -320,10 +528,8 @@ function ArticlesGrid({ posts }: { posts: BlsPost[] }) {
           subtitle="Background reading — ingredients, skin types and the science behind the bottle."
           viewAll="/essential-guide-to-informative-articles"
         />
-        <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.slice(0, 6).map((p) => (
-            <PostCard key={p.id} post={p} variant="tile" thumbBg="bg-white" />
-          ))}
+        <div className="mt-10">
+          <ArticlesCarousel posts={posts} />
         </div>
       </div>
     </section>
