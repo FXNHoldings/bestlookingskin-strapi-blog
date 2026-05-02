@@ -1,0 +1,451 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-hosted Urbanist (variable, latin) — public/fonts/Urbanist-Variable.ttf.
+   One file covers every weight 100-900 + matching italic. */
+@font-face {
+  font-family: 'Urbanist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Urbanist-Variable.ttf') format('truetype-variations'),
+       url('/fonts/Urbanist-Variable.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Urbanist';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Urbanist-Italic-Variable.ttf') format('truetype-variations'),
+       url('/fonts/Urbanist-Italic-Variable.ttf') format('truetype');
+}
+
+:root {
+  color-scheme: light;
+  --font-urbanist: 'Urbanist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Aliases so existing Tailwind utilities (font-inter / font-outfit / font-display)
+     all resolve to Urbanist without touching consumers. */
+  --font-inter: var(--font-urbanist);
+  --font-outfit: var(--font-urbanist);
+}
+
+html, body {
+  background: theme('colors.paper');
+  color: theme('colors.ink');
+  font-family: var(--font-urbanist);
+  font-weight: 400;
+}
+
+/* Site-wide h1/h2/h3 sizing. Uses !important to override per-component
+   Tailwind utility classes (e.g. text-5xl) without touching every file. */
+h1 { font-size: 2.5rem !important; line-height: 1.1; }
+h2 { font-size: 1.5rem !important; line-height: 1.25; }
+h3 { font-size: 1.2rem !important; line-height: 1.3; }
+
+/* All headings (site chrome + post body) — Urbanist, the single site font. */
+h1, h2, h3, h4, h5, h6,
+.post-content h1, .post-content h2, .post-content h3,
+.post-content h4, .post-content h5, .post-content h6 {
+  font-family: var(--font-urbanist);
+}
+
+/* Post body text */
+.post-content {
+  font-family: var(--font-urbanist);
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------------------
+   .post-content typography
+   The imported HTML brings its own GreenShift/GSPB <style> blocks for the
+   product comparison boxes. We must NOT add a global rule that styles every
+   <p>/<img>/<a> uniformly, because that breaks GSPB's flex layout (the side
+   by-side product columns). Instead: target ONLY the direct children that
+   are plain WP markup (paragraphs, headings, lists, blockquotes, plain
+   tables, plain images) and explicitly skip anything inside .gspb_*.
+   --------------------------------------------------------------------------- */
+
+.post-content {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: theme('colors.ink');
+}
+
+/* Paragraphs / headings OUTSIDE GreenShift blocks (lists handled below) */
+.post-content > :where(p, h2, h3, h4, blockquote, hr, figure, pre) {
+  margin: 1.25rem 0;
+}
+.post-content > :where(h2) {
+  font-family: theme('fontFamily.display');
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: theme('colors.ink');
+}
+.post-content > :where(h3) {
+  font-family: theme('fontFamily.display');
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: theme('colors.ink');
+}
+.post-content > :where(h4) {
+  font-family: theme('fontFamily.display');
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.post-content :where(ul, ol) {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+.post-content :where(ul) { list-style-type: disc; }
+.post-content :where(ol) { list-style-type: decimal; }
+.post-content :where(ul) :where(ul) { list-style-type: circle; }
+.post-content :where(ul) :where(ul) :where(ul) { list-style-type: square; }
+.post-content :where(ul, ol) > li { margin: 0.5rem 0; }
+.post-content > :where(blockquote) {
+  border-left: 4px solid theme('colors.primary.DEFAULT');
+  padding: 0.5rem 1rem;
+  background: theme('colors.muted');
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: italic;
+}
+.post-content :where(a:not(.gspb_row a, .gspb_col a, [class*="gspb_"] a)) {
+  color: theme('colors.primary.DEFAULT');
+  text-decoration: none;
+}
+.post-content :where(a:not(.gspb_row a, .gspb_col a, [class*="gspb_"] a)):hover {
+  text-decoration: underline;
+}
+
+/* Plain tables (WP-authored, not GSPB) — 1px #dddddd grid per design.
+   Selector is intentionally specific (article + .post-content + table) so it
+   beats the article-level border-color override that follows below. */
+article[data-testid^="post-"] .post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  border: 0 !important;
+}
+article[data-testid^="post-"] .post-content table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: 1px solid #dddddd !important;
+}
+/* Header cells: no visible border (0 / transparent) per design. */
+article[data-testid^="post-"] .post-content table th {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: 0 !important;
+  border-color: transparent !important;
+}
+
+/* Plain top-level images (NOT inside a GSPB block) */
+.post-content > :where(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1.5rem auto;
+}
+
+/* Inside GSPB blocks: don't touch — let the inline styles drive the layout. */
+
+/* Bootstrap-Icons inline rendering: 1em × 1em, baseline-aligned. Source uses
+   <svg class="bi bi-info-circle"> after the "Amazon price updated:" date so it
+   sits on the same line right after the time. */
+.post-content :where(svg.bi) {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+/* The cegg "price updated" disclaimer line — keep date + tooltip icon on one
+   line; the source uses <span class="text-nowrap">date<a>icon</a></span>. */
+.post-content .cegg-price-disclaimer small { font-style: italic; }
+.post-content .cegg-price-disclaimer a {
+  text-decoration: none;
+  color: inherit;
+  margin-left: 0.25rem;
+}
+
+/* "BUY NOW" buttons inside imported post bodies use Bootstrap's .btn-primary
+   and .btn-outline-primary from the vendored cegg-bootstrap stylesheet
+   (default Bootstrap blue). Override the per-button CSS variables to brand
+   blue (#1556ee) without touching Bootstrap's globals. */
+.post-content .btn-primary {
+  --bs-btn-bg: #1556ee;
+  --bs-btn-border-color: #1556ee;
+  --bs-btn-hover-bg: #0f43c0;
+  --bs-btn-hover-border-color: #0f43c0;
+  --bs-btn-active-bg: #0c389f;
+  --bs-btn-active-border-color: #0c389f;
+  --bs-btn-disabled-bg: #1556ee;
+  --bs-btn-disabled-border-color: #1556ee;
+}
+.post-content .btn-outline-primary {
+  --bs-btn-color: #1556ee;
+  --bs-btn-border-color: #1556ee;
+  --bs-btn-hover-bg: #1556ee;
+  --bs-btn-hover-border-color: #1556ee;
+  --bs-btn-active-bg: #1556ee;
+  --bs-btn-active-border-color: #1556ee;
+  --bs-btn-disabled-color: #1556ee;
+  --bs-btn-disabled-border-color: #1556ee;
+}
+.post-content .text-bg-primary {
+  background-color: #1556ee !important;
+}
+
+/* Cegg grid product card — soft elevation */
+.post-content .cegg-grid-card {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+              rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
+/* Buttons inside grid cards use a darker blue (#0046be) to distinguish them
+   from the side-by-side comparison-block buttons. */
+.post-content .cegg-grid-card .btn-primary {
+  --bs-btn-bg: #0046be;
+  --bs-btn-border-color: #0046be;
+  --bs-btn-hover-bg: #052f7c;
+  --bs-btn-hover-border-color: #052f7c;
+  --bs-btn-active-bg: #052f7c;
+  --bs-btn-active-border-color: #052f7c;
+  --bs-btn-disabled-bg: #0046be;
+  --bs-btn-disabled-border-color: #0046be;
+}
+.post-content .cegg-grid-card .btn-outline-primary {
+  --bs-btn-color: #0046be;
+  --bs-btn-border-color: #0046be;
+  --bs-btn-hover-bg: #0046be;
+  --bs-btn-hover-border-color: #0046be;
+  --bs-btn-active-bg: #0046be;
+  --bs-btn-active-border-color: #0046be;
+  --bs-btn-disabled-color: #0046be;
+  --bs-btn-disabled-border-color: #0046be;
+}
+
+/* Single post page: white surface + every border (chrome, affiliate disclosure,
+   GSPB column dividers, comparison-box outline, etc.) forced to white so they
+   blend into the page. Scoped so it doesn't affect home/category. */
+article[data-testid^="post-"] {
+  background-color: #ffffff;
+}
+article[data-testid^="post-"],
+article[data-testid^="post-"] * {
+  border-color: #ffffff !important;
+}
+
+/* Product Comparison single page: keep a subtle outline (#eeeeee) on the
+   comparison box and dividers so the two-product layout reads visually. */
+article[data-testid^="post-"][data-category="product-comparisons"],
+article[data-testid^="post-"][data-category="product-comparisons"] * {
+  border-color: #eeeeee !important;
+}
+
+/* ---------------------------------------------------------------------------
+   GreenShift (gspb_*) layout fallbacks
+   The imported HTML's inline <style> tags reference random GSPB instance IDs
+   (e.g. #gspb_row-id-gsbp-r4q8ub4h-p37j) that *do not match* the IDs in the
+   markup itself — the source WP server returns mismatched IDs in
+   `content.rendered`. The id-based rules are inert, so we add class-based
+   fallbacks for the structural layout (side-by-side columns, etc.).
+   --------------------------------------------------------------------------- */
+.post-content .gspb_row { position: relative; }
+.post-content .gspb_row__content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+}
+.post-content .gspb_row__col--6 {
+  width: 50%;
+  padding: 15px min(3vw, 20px);
+  box-sizing: border-box;
+  position: relative;
+}
+.post-content .gspb_row__col--4  { width: 33.3333%; padding: 15px min(3vw, 20px); box-sizing: border-box; }
+.post-content .gspb_row__col--3  { width: 25%;       padding: 15px min(3vw, 20px); box-sizing: border-box; }
+.post-content .gspb_row__col--12 { width: 100%;      padding: 15px min(3vw, 20px); box-sizing: border-box; }
+@media (max-width: 767.98px) {
+  .post-content .gspb_row__col--6,
+  .post-content .gspb_row__col--4,
+  .post-content .gspb_row__col--3 { width: 100%; }
+}
+.post-content [id^=gspb_col-id] {
+  padding: 15px min(3vw, 20px);
+  box-sizing: border-box;
+  position: relative;
+}
+.post-content .gspb_container { position: relative; }
+
+/* Versus column dividers and headers (used by the comparison template) */
+.post-content .tmn-versus-col + .tmn-versus-col {
+  border-left: 1px dashed #cecece;
+}
+@media (max-width: 767.98px) {
+  .post-content .tmn-versus-col + .tmn-versus-col { border-left: none; }
+}
+.post-content .tmn-verus-title {
+  text-align: center;
+  color: #fff;
+  padding: 10px 1rem;
+  margin: 0 -15px 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.post-content .tmn-versus-col:nth-of-type(1) .tmn-verus-title { background: #304ffe; }
+.post-content .tmn-versus-col:nth-of-type(2) .tmn-verus-title { background: #009688; }
+
+/* Pros/cons two-column grid: when a GSPB container has two .tmn-pros children
+   (Advantages + Drawbacks), lay them side-by-side. The source defines this on
+   per-instance IDs that don't survive REST round-trips, so we use :has(). */
+.post-content .gspb_container:has(> .tmn-pros + .tmn-pros) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 35px;
+  margin-bottom: 30px;
+}
+@media (max-width: 767.98px) {
+  .post-content .gspb_container:has(> .tmn-pros + .tmn-pros) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* GreenShift FAQ accordion — question (title) bar styling.
+   Source markup keys per-instance IDs we can't match, so target by class. */
+.post-content .gs-accordion-item > .gs-accordion-item__title {
+  background-color: #f9f9f9;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  padding: 0.875rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.post-content .gs-accordion-item__heading,
+.post-content .gs-accordion-item__heading * {
+  font-size: 18px;
+  font-weight: 600;
+}
+.post-content .gs-accordion-item > .gs-accordion-item__content {
+  background-color: #ffffff;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-top: 0;
+}
+/* Closed state — collapses the answer panel. PostContent.tsx adds `.gsclose`
+   to every accordion item on mount and toggles it on title click. */
+.post-content .gs-accordion-item.gsclose > .gs-accordion-item__content {
+  display: none;
+}
+/* Visual toggle indicator on the title bar */
+.post-content .gs-accordion-item > .gs-accordion-item__title::after {
+  content: '−';
+  margin-left: 1rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: rgba(15, 23, 42, 0.5);
+  transition: transform 0.15s ease;
+}
+.post-content .gs-accordion-item.gsclose > .gs-accordion-item__title::after {
+  content: '+';
+}
+.post-content .gs-accordion-item__heading {
+  margin: 0 !important;
+  flex: 1;
+}
+
+/* GreenShift heading block (e.g. "Advantages", "Drawbacks") — bold 19px label
+   above the icon-lists in product roundups. */
+.post-content .gspb_heading {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 30px 0 0 0;
+  font-family: var(--font-urbanist), system-ui, sans-serif;
+  color: theme('colors.ink');
+}
+/* When the GSPB heading is rendered as a real <h2>/<h3> (i.e. it's a major
+   section header like "FAQs" / "Phone FAQs", not a sub-label like
+   Advantages/Drawbacks) give it more breathing room above. */
+.post-content h2.gspb_heading,
+.post-content h3.gspb_heading {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+/* GreenShift icon list — used for Advantages (check) / Drawbacks (x) lists. */
+.post-content .gspb_iconsList { padding: 0; margin: 0 0 1rem; }
+.post-content .gspb_iconsList__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+.post-content .gspb_iconsList__item__text {
+  margin-left: 15px;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+.post-content .gspb_iconsList__item svg {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+/* Icon colors — distinguished by Bootstrap-Icons class names baked into the SVG */
+.post-content .gspb_iconsList__item svg.bi-check-circle path { fill: #00d084; }
+.post-content .gspb_iconsList__item svg.bi-x-circle path     { fill: #de1414; }
+.post-content .gspb_iconsList__item svg.bi-info-circle path  { fill: #0d6efd; }
+.post-content .gspb_iconsList__item svg.bi-exclamation-triangle path { fill: #f59e0b; }
+
+/* GreenShift progress-bar / rating circle (the "8.4" score widget).
+   Source IDs vary, so we apply via the stable class names. */
+.post-content .gspb-progressbar_circle {
+  position: relative;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem auto;
+}
+.post-content .gspb-progressbar_circle svg {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.post-content .gspb-progressbar_circle svg path {
+  stroke-width: 6px;
+  stroke: #2184f9;
+  fill: #f2fffe;
+}
+.post-content .gspb-progressbar_circle_value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111;
+  z-index: 1;
+  position: relative;
+  font-family: var(--font-urbanist), system-ui, sans-serif;
+}

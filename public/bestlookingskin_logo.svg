@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BestLooking.Skin wordmark — creative version.
+  Keeps the two-line stack of the source PNG (BEST.SKIN / LOOKING) but adds
+  three distinctive touches:
+    1. A custom red teardrop replaces the period in ".SKIN" — references
+       skincare drops/serums.
+    2. A short red underline accent runs beneath LOOKING.
+    3. The ".SKIN" small caps sit in a soft red-tinted pill, separating the
+       brand mark from the parent BEST mark.
+  All text uses currentColor so the logo flips with the parent's text color.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 580 250"
+  role="img"
+  aria-label="BestLooking.Skin"
+  preserveAspectRatio="xMinYMid meet"
+>
+  <style>
+    .wm-big   { font-family: 'Urbanist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+                font-weight: 900;
+                font-size: 130px;
+                letter-spacing: -4px; }
+    .wm-small { font-family: 'Urbanist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+                font-weight: 800;
+                font-size: 38px;
+                letter-spacing: 1.5px; }
+  </style>
+
+  <defs>
+    <!-- teardrop fill: rose → coral gradient gives the drop a glossy feel -->
+    <linearGradient id="dropGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ff5a4e"/>
+      <stop offset="100%" stop-color="#c32525"/>
+    </linearGradient>
+
+    <!-- highlight inside the drop, mimicking a real liquid bead -->
+    <radialGradient id="dropHighlight" cx="0.35" cy="0.3" r="0.4">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ============================ Line 1 ============================ -->
+  <!-- BEST -->
+  <text x="0" y="100" class="wm-big" fill="currentColor">BEST</text>
+
+  <!-- Teardrop replacing the period: pointed top, rounded body. Sits at the
+       cap-line of BEST (~y 28-95) so it reads as the punctuation. -->
+  <g transform="translate(338, 30)">
+    <path
+      d="M 18 0
+         C 18 0 36 30 36 50
+         A 18 18 0 1 1 0 50
+         C 0 30 18 0 18 0 Z"
+      fill="url(#dropGrad)"
+    />
+    <!-- glossy highlight -->
+    <ellipse cx="13" cy="40" rx="6" ry="9" fill="url(#dropHighlight)"/>
+  </g>
+
+  <!-- "SKIN" in a soft pink pill — the chip styling separates it visually from
+       BEST and gives the wordmark a second readable focal point. -->
+  <g transform="translate(388, 56)">
+    <rect x="0" y="0" rx="22" ry="22" width="190" height="44" fill="#fde2e2"/>
+    <text x="14" y="32" class="wm-small" fill="#c32525">SKIN</text>
+  </g>
+
+  <!-- ============================ Line 2 ============================ -->
+  <text x="0" y="220" class="wm-big" fill="currentColor">LOOKING</text>
+
+  <!-- Red underline accent — hints at a confident editorial mark -->
+  <rect x="0" y="232" width="540" height="6" rx="3" fill="#e33333"/>
+</svg>
