@@ -55,9 +55,9 @@ export default async function HtmlSitemapPage() {
     <div data-testid="sitemap-page">
       <section className="bg-paper">
         <div className="mx-auto max-w-7xl px-6 py-12 lg:py-20">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Site map</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Everything on BestLooking</p>
           <h1 className="mt-4 font-display font-bold leading-tight tracking-tight text-ink">
-            Everything on {SITE.name}.
+            Sitemap
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg">
             A human-readable index of every page. For machines see{' '}
