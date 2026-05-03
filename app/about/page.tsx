@@ -46,7 +46,7 @@ export default function AboutPage() {
               <Link href="/products" className="inline-flex items-center rounded-full bg-primary px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-white transition hover:bg-primary-emphasis">
                 Browse products
               </Link>
-              <Link href="/essential-guide-to-informative-articles" className="inline-flex items-center rounded-full border border-ink/15 bg-white px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-ink transition hover:border-primary hover:text-primary">
+              <Link href="/informative-articles" className="inline-flex items-center rounded-full border border-ink/15 bg-white px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-ink transition hover:border-primary hover:text-primary">
                 Read articles
               </Link>
             </div>

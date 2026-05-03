@@ -59,7 +59,7 @@
   line-height: 1.35 !important;
 }
 
-/* Post category pages (e.g. /skincare-how-to-guides) — tile titles. */
+/* Post category pages (e.g. /how-to-guides) — tile titles. */
 [data-testid^="category-"] [data-testid^="tile-"] h6 {
   font-size: 1rem !important;
   font-weight: 600 !important;

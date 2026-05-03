@@ -31,11 +31,11 @@ const SKINCARE_TYPES: { label: string; query: string }[] = [
 ];
 
 const TOOLS: ToolCard[] = [
-  { title: 'How-To Guides',         href: '/skincare-how-to-guides',                   blurb: 'Step-by-step routines and layering rules.',     emoji: '📖' },
-  { title: 'Top-Rated Products',    href: '/top-rated-skincare-for-glowing-skin',      blurb: 'The standouts across cleansers, serums, SPF.',  emoji: '⭐' },
-  { title: 'Product Reviews',       href: '/skincare-reviews-path-to-glowing-skin',    blurb: 'Clear product verdicts, details and routine fit.', emoji: '🔎' },
-  { title: 'Informative Articles',  href: '/essential-guide-to-informative-articles',  blurb: 'Ingredients, skin types, the science behind it.', emoji: '🧪' },
-  { title: 'Comparisons',           href: '/best-product-comparisons',                 blurb: 'Side-by-side breakdowns to pick a routine.',    emoji: '⚖️' },
+  { title: 'How-To Guides',         href: '/how-to-guides',           blurb: 'Step-by-step routines and layering rules.',     emoji: '📖' },
+  { title: 'Top-Rated Products',    href: '/top-rated-products',      blurb: 'The standouts across cleansers, serums, SPF.',  emoji: '⭐' },
+  { title: 'Product Reviews',       href: '/product-reviews',         blurb: 'Clear product verdicts, details and routine fit.', emoji: '🔎' },
+  { title: 'Informative Articles',  href: '/informative-articles',    blurb: 'Ingredients, skin types, the science behind it.', emoji: '🧪' },
+  { title: 'Comparisons',           href: '/product-comparisons',     blurb: 'Side-by-side breakdowns to pick a routine.',    emoji: '⚖️' },
 ];
 
 const SHOWCASE: { label: string; href: string; img: string }[] = [
@@ -115,8 +115,8 @@ export default async function HomePage() {
     latest.push(p);
   }
 
-  const reviews = bySection['skincare-reviews-path-to-glowing-skin'] ?? [];
-  const articles = bySection['essential-guide-to-informative-articles'] ?? [];
+  const reviews = bySection['product-reviews'] ?? [];
+  const articles = bySection['informative-articles'] ?? [];
 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
@@ -590,7 +590,7 @@ function ProductReviews({ posts }: { posts: BlsPost[] }) {
           eyebrow="Hands-on"
           title="Product Reviews"
           subtitle="Honest takes on the products people are actually shopping for."
-          viewAll="/skincare-reviews-path-to-glowing-skin"
+          viewAll="/product-reviews"
         />
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_1fr]">
           <PostCard post={feature} variant="feature" thumbBg="bg-white" />
@@ -642,7 +642,7 @@ function ArticlesGrid({ posts }: { posts: BlsPost[] }) {
           eyebrow="Read more"
           title="Articles"
           subtitle="Background reading — ingredients, skin types and the science behind the bottle."
-          viewAll="/essential-guide-to-informative-articles"
+          viewAll="/informative-articles"
         />
         <div className="mt-10 rounded-[1.75rem] px-4 py-6 sm:px-6">
           <ArticlesCarousel posts={posts} />

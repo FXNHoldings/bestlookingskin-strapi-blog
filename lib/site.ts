@@ -14,12 +14,11 @@ export const SITE = {
 // Section slugs match the source WP categories on bestlooking.skin so URLs stay
 // 1:1 with the migrated content (preserves SEO).
 export type SectionKey =
-  | 'best-product-comparisons'
-  | 'skincare-reviews-path-to-glowing-skin'
-  | 'top-rated-skincare-for-glowing-skin'
-  | 'skincare-how-to-guides'
-  | 'essential-guide-to-informative-articles'
-  | 'reviews';
+  | 'product-comparisons'
+  | 'product-reviews'
+  | 'top-rated-products'
+  | 'how-to-guides'
+  | 'informative-articles';
 
 export type Section = {
   slug: SectionKey;
@@ -30,39 +29,33 @@ export type Section = {
 
 export const SECTIONS: Section[] = [
   {
-    slug: 'best-product-comparisons',
+    slug: 'product-comparisons',
     title: 'Product Comparisons',
     short: 'Comparisons',
     blurb: 'Side-by-side product breakdowns so you can pick the right routine in minutes.',
   },
   {
-    slug: 'skincare-reviews-path-to-glowing-skin',
-    title: 'Skincare Reviews',
+    slug: 'product-reviews',
+    title: 'Product Reviews',
     short: 'Reviews',
     blurb: 'Hands-on reviews — what works, what doesn’t, what’s worth the money.',
   },
   {
-    slug: 'top-rated-skincare-for-glowing-skin',
-    title: 'Top-Rated Skincare',
+    slug: 'top-rated-products',
+    title: 'Top-Rated Products',
     short: 'Top Rated',
     blurb: 'The standouts — highest-rated picks across cleansers, serums, moisturisers and more.',
   },
   {
-    slug: 'skincare-how-to-guides',
+    slug: 'how-to-guides',
     title: 'How-to Guides',
     short: 'How-to',
     blurb: 'Step-by-step routines, layering rules and troubleshooting tips.',
   },
   {
-    slug: 'essential-guide-to-informative-articles',
+    slug: 'informative-articles',
     title: 'Informative Articles',
     short: 'Explainers',
     blurb: 'Background reading — ingredients, skin types and the science behind the bottle.',
-  },
-  {
-    slug: 'reviews',
-    title: 'Brand Reviews',
-    short: 'Brands',
-    blurb: 'Brand-by-brand reviews and verdicts.',
   },
 ];

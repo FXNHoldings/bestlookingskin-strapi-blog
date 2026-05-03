@@ -25,11 +25,11 @@ export default async function Header() {
     { label: 'Brands', href: '/brands' },
     {
       label: 'Articles',
-      href: '/essential-guide-to-informative-articles',
+      href: '/informative-articles',
       children: [
-        { label: 'All Articles', href: '/essential-guide-to-informative-articles' },
-        ...SECTIONS.filter((section) => section.slug !== 'reviews').map((section) => ({
-          label: section.slug === 'skincare-reviews-path-to-glowing-skin' ? 'Product Reviews' : section.title,
+        { label: 'All Articles', href: '/informative-articles' },
+        ...SECTIONS.map((section) => ({
+          label: section.title,
           href: `/${section.slug}`,
         })),
       ],
