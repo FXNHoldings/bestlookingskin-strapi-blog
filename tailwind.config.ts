@@ -62,8 +62,8 @@ export default {
           700: '#7a3100',
         },
         ink: '#07142b',
-        paper: '#f0f2f4',
-        muted: '#f0f2f4',
+        paper: '#f7f7f7',
+        muted: '#f7f7f7',
       },
       fontFamily: {
         sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],

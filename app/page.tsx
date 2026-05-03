@@ -502,7 +502,7 @@ function FacialSerumsSection({ products }: { products: BlsProduct[] }) {
           </div>
         ) : (
           <div className="mt-10 border-t border-ink/10 pt-8">
-            <ProductsCarousel products={products} thumbBg="bg-[#f0f2f4]" />
+            <ProductsCarousel products={products} thumbBg="bg-[#f7f7f7]" />
           </div>
         )}
       </div>

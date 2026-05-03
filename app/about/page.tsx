@@ -151,7 +151,7 @@ export default function AboutPage() {
 
 function ImagePlaceholder({ label }: { label: string }) {
   return (
-    <div className="flex min-h-[320px] items-center justify-center rounded border border-dashed border-ink/20 bg-[#f0f2f4] px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-ink/45">
+    <div className="flex min-h-[320px] items-center justify-center rounded border border-dashed border-ink/20 bg-[#f7f7f7] px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-ink/45">
       {label}
     </div>
   );
