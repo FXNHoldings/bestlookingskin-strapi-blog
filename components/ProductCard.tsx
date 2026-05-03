@@ -34,7 +34,7 @@ export default function ProductCard({
             )}
           </div>
           <div className="min-w-0">
-            {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-[#ffce00]">{brandName}</p>}
+            {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-primary">{brandName}</p>}
             <h6 className="mt-1 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
               {product.name}
             </h6>
@@ -62,8 +62,8 @@ export default function ProductCard({
       </Link>
       <div className="mt-4">
         <div className="flex items-center justify-between gap-3">
-          {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-[#ffce00]">{brandName}</p>}
-          {showCategory && cat && <p className="text-[14px] text-[#ffce00]">{cat.name}</p>}
+          {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-primary">{brandName}</p>}
+          {showCategory && cat && <p className="text-[14px] text-ink/45">{cat.name}</p>}
         </div>
         <Link href={href}>
           <h6 className="mt-2 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
@@ -91,7 +91,7 @@ export default function ProductCard({
           )}
         </div>
         {product.rating !== undefined && product.rating > 0 && (
-          <p className="mt-2 text-xs text-[#ffce00]">
+          <p className="mt-2 text-xs text-ink/55">
             ★ {product.rating.toFixed(1)}
             {product.ratingCount ? ` · ${product.ratingCount} reviews` : ''}
           </p>
