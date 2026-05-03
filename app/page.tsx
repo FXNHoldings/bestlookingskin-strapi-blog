@@ -45,8 +45,8 @@ const SHOWCASE: { label: string; href: string; img: string }[] = [
     img: '/showcase-moisturizer.jpg',
   },
   {
-    label: 'Product Reviews',
-    href: '/search?q=anti-aging',
+    label: 'Anti-Aging',
+    href: '/products?category=anti-aging',
     img: '/showcase-reviews.jpg',
   },
   {
