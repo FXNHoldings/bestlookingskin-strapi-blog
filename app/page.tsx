@@ -149,8 +149,8 @@ export default async function HomePage() {
           'facial-serums' — create that category in Strapi or via the importer
           (BLS_PRODUCT_CATEGORY=facial-serums) to populate it. */}
       <FacialSerumsSection products={facialSerumProducts} />
-      <FirstStepSection />
       <FacialCleansersSection products={facialCleanserProducts} />
+      <FirstStepSection />
       {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 5)} />}
     </div>
   );

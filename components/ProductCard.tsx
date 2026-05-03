@@ -62,11 +62,11 @@ export default function ProductCard({
       </Link>
       <div className="mt-4">
         <div className="flex items-center justify-between gap-3">
-          {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-primary">{brandName}</p>}
+          {brandName && <p className="text-[12px] !font-light uppercase tracking-wider text-primary">{brandName}</p>}
           {showCategory && cat && <p className="text-[14px] text-ink/45">{cat.name}</p>}
         </div>
         <Link href={href}>
-          <h6 className="mt-2 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
+          <h6 className="mt-2 line-clamp-2 font-display text-[1rem] font-semibold leading-snug tracking-[0.3px] text-ink transition group-hover:text-primary">
             {product.name}
           </h6>
         </Link>

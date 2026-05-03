@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { listProducts, listProductCategories, type BlsProduct } from '@/lib/strapi';
+import { listProducts, listProductCategories, listProductBrands, type BlsProduct } from '@/lib/strapi';
 import ProductCard from '@/components/ProductCard';
+import AdsenseUnit from '@/components/AdsenseUnit';
 import { SITE } from '@/lib/site';
 
 export const revalidate = 60;
@@ -19,21 +20,32 @@ type SearchParams = {
   skinType?: string;
   sort?: string;
   page?: string;
+  view?: string;
 };
 
 const PAGE_SIZE = 24;
 const VALID_SORTS = ['newest', 'price-asc', 'price-desc', 'rating-desc'] as const;
 type Sort = (typeof VALID_SORTS)[number];
+const VALID_VIEWS = ['2', '3', '4'] as const;
+type View = (typeof VALID_VIEWS)[number];
+const VIEW_GRID: Record<View, string> = {
+  '2': 'sm:grid-cols-2 lg:grid-cols-2',
+  '3': 'sm:grid-cols-2 lg:grid-cols-3',
+  '4': 'sm:grid-cols-2 lg:grid-cols-4',
+};
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const { q, category, brand, skinType, sort: sortRaw, page: pageRaw } = await searchParams;
+  const { q, category, brand, skinType, sort: sortRaw, page: pageRaw, view: viewRaw } = await searchParams;
   const query = (q ?? '').trim();
   const page = Math.max(1, Number(pageRaw) || 1);
   const sort: Sort = (VALID_SORTS as readonly string[]).includes(sortRaw ?? '')
     ? (sortRaw as Sort)
     : 'newest';
+  const view: View = (VALID_VIEWS as readonly string[]).includes(viewRaw ?? '')
+    ? (viewRaw as View)
+    : '4';
 
-  const [res, categories] = await Promise.all([
+  const [res, categories, brands] = await Promise.all([
     listProducts({
       q: query || undefined,
       category: category || undefined,
@@ -44,50 +56,40 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       pageSize: PAGE_SIZE,
     }).catch(() => null),
     listProductCategories().catch(() => []),
+    listProductBrands().catch(() => []),
   ]);
 
   const products: BlsProduct[] = res?.data ?? [];
   const total = res?.meta?.pagination?.total ?? 0;
   const pageCount = res?.meta?.pagination?.pageCount ?? 1;
+  const activeCategory = category ? categories.find((c) => c.slug === category) : null;
+  const pageTitle = activeCategory?.name ?? 'Skincare Products';
+  const pageDescription = activeCategory
+    ? activeCategory.description?.trim() ||
+      `Browse our ${activeCategory.name.toLowerCase()} selection — handpicked products our editors trust, with current prices, ingredient notes and routine guidance.`
+    : "Searchable catalog of the products we've covered. Filter by category, brand or skin type.";
 
   // Build query-string preservers for filter links
   const baseQs = new URLSearchParams();
   if (query) baseQs.set('q', query);
   if (sort !== 'newest') baseQs.set('sort', sort);
+  if (view !== '4') baseQs.set('view', view);
 
   return (
     <div data-testid="products-page">
       <section className="bg-paper py-12">
         <div className="mx-auto max-w-7xl px-6">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Products</p>
-          <h1 className="mt-3 font-display font-bold tracking-tight text-ink">
-            Skincare Products
-          </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg">
-            Searchable catalog of the products we’ve covered. Filter by category, brand or skin type.
+          <p>
+            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-normal text-blue-700">
+              Product Category
+            </span>
           </p>
-
-          <form
-            action="/products"
-            method="get"
-            className="mt-6 flex h-12 max-w-xl items-center gap-2 rounded-full border border-ink/15 bg-white px-5 transition focus-within:border-primary"
-          >
-            <input
-              type="search"
-              name="q"
-              defaultValue={query}
-              placeholder="Search products, brands, ingredients…"
-              className="h-full w-full bg-transparent text-base text-ink outline-none placeholder:text-ink/45"
-              aria-label="Search products"
-            />
-            {category && <input type="hidden" name="category" value={category} />}
-            {brand && <input type="hidden" name="brand" value={brand} />}
-            {skinType && <input type="hidden" name="skinType" value={skinType} />}
-            {sort !== 'newest' && <input type="hidden" name="sort" value={sort} />}
-            <button type="submit" className="text-sm font-bold uppercase tracking-wider text-primary">
-              Search
-            </button>
-          </form>
+          <h1 className="mt-3 font-display font-bold tracking-tight text-ink">
+            {pageTitle}
+          </h1>
+          <p className="mt-3 max-w-2xl text-[18px] leading-7 text-ink/70">
+            {pageDescription}
+          </p>
         </div>
       </section>
 
@@ -95,9 +97,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
           {/* Filters sidebar */}
           <aside className="space-y-8" aria-label="Filters">
+            <AdsenseUnit slot="3958661572" />
+
             {categories.length > 0 && (
               <div>
-                <h2 className="font-display text-base font-bold uppercase tracking-wider text-ink">Category</h2>
+                <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Category</h6>
                 <ul className="mt-3 space-y-1 text-sm">
                   <li>
                     <FilterLink active={!category} href={withoutKey(baseQs, 'category')}>
@@ -118,8 +122,31 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
               </div>
             )}
 
+            {brands.length > 0 && (
+              <div>
+                <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Brand</h6>
+                <ul className="mt-3 space-y-1 text-sm">
+                  <li>
+                    <FilterLink active={!brand} href={withoutKey(baseQs, 'brand')}>
+                      All brands
+                    </FilterLink>
+                  </li>
+                  {brands.map((b) => (
+                    <li key={b.id}>
+                      <FilterLink
+                        active={brand === b.slug}
+                        href={withParam(baseQs, 'brand', b.slug)}
+                      >
+                        {b.name}
+                      </FilterLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div>
-              <h2 className="font-display text-base font-bold uppercase tracking-wider text-ink">Skin type</h2>
+              <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Skin type</h6>
               <ul className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
                 {['dry', 'oily', 'sensitive', 'combination', 'normal', 'mature'].map((s) => (
                   <li key={s}>
@@ -151,11 +178,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   </>
                 )}
               </p>
-              <SortDropdown current={sort} baseQs={baseQs} />
+              <div className="flex items-center gap-3">
+                <ViewSwitcher current={view} baseQs={baseQs} />
+                <SortDropdown current={sort} baseQs={baseQs} />
+              </div>
             </div>
 
             {products.length > 0 ? (
-              <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+              <div className={`mt-8 grid gap-x-6 gap-y-10 ${VIEW_GRID[view]}`}>
                 {products.map((p) => (
                   <ProductCard key={p.id} product={p} variant="tile" />
                 ))}
@@ -240,6 +270,41 @@ function FilterLink({
   );
 }
 
+function ViewSwitcher({ current, baseQs }: { current: View; baseQs: URLSearchParams }) {
+  const opts: { v: View; label: string }[] = [
+    { v: '2', label: '2 cols' },
+    { v: '3', label: '3 cols' },
+    { v: '4', label: '4 cols' },
+  ];
+  return (
+    <div className="hidden items-center gap-1 lg:flex" role="group" aria-label="Grid columns">
+      <span className="mr-1 text-xs text-ink/55">View:</span>
+      {opts.map((o) => {
+        const next = new URLSearchParams(baseQs.toString());
+        if (o.v === '4') next.delete('view');
+        else next.set('view', o.v);
+        next.delete('page');
+        const href = `/products${next.toString() ? `?${next}` : ''}`;
+        const active = current === o.v;
+        return (
+          <Link
+            key={o.v}
+            href={href}
+            aria-pressed={active}
+            className={
+              active
+                ? 'rounded-md bg-primary px-2.5 py-1 text-xs font-bold text-white'
+                : 'rounded-md border border-ink/15 px-2.5 py-1 text-xs text-ink/70 hover:border-primary hover:text-primary'
+            }
+          >
+            {o.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 function SortDropdown({ current, baseQs }: { current: Sort; baseQs: URLSearchParams }) {
   const opts: { v: Sort; l: string }[] = [
     { v: 'newest',      l: 'Newest' },
@@ -264,7 +329,7 @@ function SortDropdown({ current, baseQs }: { current: Sort; baseQs: URLSearchPar
           <option key={o.v} value={o.v}>{o.l}</option>
         ))}
       </select>
-      <button type="submit" className="rounded-md bg-ink/5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-ink hover:bg-ink/10">
+      <button type="submit" className="inline-flex items-center justify-center rounded-md bg-ink/5 px-3 py-1.5 text-xs font-bold uppercase leading-none tracking-wider text-ink hover:bg-ink/10">
         Apply
       </button>
     </form>

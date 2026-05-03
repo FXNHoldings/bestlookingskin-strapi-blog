@@ -9,6 +9,12 @@
   padding-right: 2rem !important;
 }
 
+/* Center button text site-wide. !important wins against per-component
+   utility classes like text-left/right that may sneak in via the cascade. */
+button {
+  text-align: center !important;
+}
+
 /* Product titles inside the home page only — 1rem / 600 weight.
    Scoped via [data-testid="home-page"] so other places using ProductCard
    (e.g. /products listing, related-products on a single product page)
@@ -51,25 +57,60 @@
 }
 
 /* Articles section on the home page — compact post tiles:
-   hide excerpt paragraph and set title to 1rem / 600 weight.
+   hide excerpt paragraph and set title to 1rem / 500 weight.
    .line-clamp-2 distinguishes the excerpt from the date paragraph. */
 [data-testid="articles"] [data-testid^="tile-"] h6 {
   font-size: 1rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   line-height: 1.35 !important;
 }
 
 /* Post category pages (e.g. /how-to-guides) — tile titles. */
 [data-testid^="category-"] [data-testid^="tile-"] h6 {
   font-size: 1rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   line-height: 1.35 !important;
+}
+
+/* Products listing page — product card titles: 14px / weight 400. */
+[data-testid="products-page"] [data-testid^="product-"] h6 {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+}
+
+/* Hide the product category badge (text-ink/45) and the muted meta line
+   (text-ink/55) on every product card across product-listing surfaces.
+   Brand, title, description and price still render. */
+[data-testid="products-page"] [data-testid^="product-"] p.text-ink\/45,
+[data-testid="products-page"] [data-testid^="product-"] p.text-ink\/55,
+[data-testid="related-products"] [data-testid^="product-"] p.text-ink\/45,
+[data-testid="related-products"] [data-testid^="product-"] p.text-ink\/55 {
+  display: none !important;
+}
+
+/* Card thumbnail surface — light gray (#f7f7f7) behind cover images on
+   both post and product cards across all variants. PostCard ships with
+   bg-muted (default) and ProductCard ships with bg-white; we override
+   both within their respective <article> wrappers. */
+article[data-testid^="tile-"] .bg-muted,
+article[data-testid^="feature-"] .bg-muted,
+article[data-testid^="compact-"] .bg-muted,
+article[data-testid^="product-"] .bg-white {
+  background-color: #f7f7f7 !important;
+}
+
+/* Post category pages — hide tile metadata (category eyebrow, excerpt, and
+   date · reading-time line) so the grid reads as image + title only.
+   Targets every <p> inside a tile; the title is an <h6>, image is in <a>. */
+[data-testid^="category-"] [data-testid^="tile-"] p {
+  display: none !important;
 }
 
 /* Post category page title (the category h1, e.g. "How-to Guides"). */
 [data-testid^="category-"] > header h1,
 [data-testid^="category-"] h1 {
-  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem) !important;
+  font-size: 2rem !important;
   line-height: 1.2 !important;
 }
 
@@ -124,12 +165,13 @@
    targets the title h1 inside the post header. Stays fluid. */
 [data-testid^="post-"] > header h1 {
   font-size: clamp(1rem, 0.725rem + 1.4vw, 1.75rem) !important;
+  font-weight: 500 !important;
   line-height: 1.25 !important;
 }
 
 /* Products listing / category page title (e.g. "Skincare Products"). */
 [data-testid="products-page"] h1 {
-  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem) !important;
+  font-size: 2rem !important;
   line-height: 1.2 !important;
 }
 
@@ -359,25 +401,25 @@ h4 { font-size: clamp(1.15rem,   0.99rem  + 0.8vw,   1.625rem) !important; line-
 h5 { font-size: clamp(1.05rem,   0.95rem  + 0.5vw,   1.3rem)   !important; line-height: 1.35 !important; }
 h6 { font-size: clamp(1rem,      0.92rem  + 0.4vw,   1.15rem)  !important; line-height: 1.4  !important; }
 
-/* Site heading system: Outfit, 600, zero letter spacing. */
+/* Site heading system: Urbanist, 700, zero letter spacing. */
 h1, h2, h3, h4, h5, h6,
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6 {
-  font-family: var(--font-outfit) !important;
-  font-weight: 600 !important;
+  font-family: var(--font-urbanist) !important;
+  font-weight: 700 !important;
   letter-spacing: 0 !important;
 }
 
 /* Imported post bodies (WordPress + Elementor) ship inline `font-family`
    on heading children (<span>, <strong>, etc.). Force-override them so
-   every heading inside .post-content reads as Outfit regardless of
+   every heading inside .post-content reads as Urbanist regardless of
    nested inline styles. */
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6,
 .post-content h1 *, .post-content h2 *, .post-content h3 *,
 .post-content h4 *, .post-content h5 *, .post-content h6 * {
-  font-family: var(--font-outfit) !important;
-  font-weight: 600 !important;
+  font-family: var(--font-urbanist) !important;
+  font-weight: 700 !important;
   letter-spacing: 0 !important;
 }
 

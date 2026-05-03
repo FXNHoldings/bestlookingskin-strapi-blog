@@ -23,7 +23,7 @@ export default function Page() {
         We process personal data in accordance with the Australian Privacy Act 1988 (Cth) and the
         Australian Privacy Principles. Where you are located in the European Economic Area (EEA),
         the United Kingdom, Switzerland, or the United States (including California and other states
-        with comprehensive privacy laws), additional rights apply — see sections 8–11 below.
+        with comprehensive privacy laws), additional rights apply — see sections 8-11 below.
       </p>
 
       {/* 1. What information do we collect? */}
@@ -204,7 +204,7 @@ export default function Page() {
         the subject of a European Commission adequacy decision, we rely on Standard Contractual
         Clauses (the EU SCCs as updated 4 June 2021, and the UK International Data Transfer
         Addendum) and additional supplementary measures where appropriate, in accordance with
-        Articles 45–49 GDPR.
+        Articles 45-49 GDPR.
       </p>
       <p>
         For Australian residents, where Personal Information is sent to a country with data
