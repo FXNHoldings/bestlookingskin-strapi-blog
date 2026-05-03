@@ -121,7 +121,7 @@ export default async function Footer() {
       {/* Bottom strip — legal + copyright */}
       <div className="border-t border-ink/10">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 px-6 py-5 text-xs text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} {SITE.name}. All Rights Reserved.</p>
+          <p className="!text-[14px] !font-normal">© {year} {SITE.name}. All Rights Reserved.</p>
           <ul className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 self-end sm:self-auto">
             <li><Link href="/legal/terms"   className="text-ink/65 transition hover:text-primary">Terms and Conditions</Link></li>
             <li><Link href="/legal/privacy" className="text-ink/65 transition hover:text-primary">Privacy Policy</Link></li>
