@@ -13,8 +13,8 @@ const CONTACT_EMAIL = 'hello@bestlooking.skin';
 
 export default function ContactPage() {
   return (
-    <div className="bg-white" data-testid="contact-page">
-      <section className="bg-white">
+    <div data-testid="contact-page">
+      <section className="bg-paper">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Contact</p>
           <h1 className="mt-4 font-display font-bold leading-[1.05] tracking-tight text-ink">
@@ -27,7 +27,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-paper py-16 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Send a message</p>
