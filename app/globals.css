@@ -313,6 +313,12 @@ p {
   font-size: 1rem !important;
 }
 
+p[class*="uppercase"][class*="tracking"],
+span[class*="uppercase"][class*="tracking"] {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
 [data-testid="site-footer"] p {
   font-size: 1rem !important;
   font-weight: 500 !important;

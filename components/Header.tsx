@@ -39,7 +39,7 @@ export default async function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-ink/10 bg-paper/95 backdrop-blur"
+      className="sticky top-0 z-50 border-b border-ink/10 bg-white backdrop-blur"
       data-testid="site-header"
     >
       {/* Single row: logo + search (next to logo) + nav (right-aligned). On
