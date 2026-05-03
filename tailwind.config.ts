@@ -66,12 +66,12 @@ export default {
         muted: '#f7f7f7',
       },
       fontFamily: {
-        sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        inter: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        urbanist: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        fraunces: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        outfit: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        urbanist: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        fraunces: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         prose: '70ch',

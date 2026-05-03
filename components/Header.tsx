@@ -101,7 +101,7 @@ export default async function Header() {
           data-testid="primary-nav"
           aria-label="Categories"
         >
-          <ul className="flex min-w-max items-center justify-end gap-x-8 text-base font-semibold capitalize tracking-normal">
+          <ul className="flex min-w-max items-center justify-end gap-x-8 !text-[16px] !font-semibold capitalize tracking-normal">
             {nav.map((item) => {
               const testId = `nav-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
               const linkClass =
@@ -153,7 +153,7 @@ export default async function Header() {
                         <Link
                           href={child.href}
                           role="menuitem"
-                          className="block whitespace-nowrap px-4 py-2 text-sm text-ink/85 transition-colors hover:bg-muted hover:text-primary"
+                          className="block whitespace-nowrap px-4 py-2 text-base !font-medium text-ink/85 transition-colors hover:bg-muted hover:text-primary"
                           data-testid={`nav-${child.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
                         >
                           {child.label}

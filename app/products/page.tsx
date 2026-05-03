@@ -86,7 +86,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           <h1 className="mt-3 font-display font-bold tracking-tight text-ink">
             {pageTitle}
           </h1>
-          <p className="mt-3 max-w-2xl text-[18px] leading-7 text-ink/70">
+          <p className="mt-3 text-[18px] leading-7 text-ink/70">
             {pageDescription}
           </p>
         </div>

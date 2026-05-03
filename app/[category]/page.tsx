@@ -84,9 +84,14 @@ export default async function CategoryPage({
             {name}
           </h1>
           {sectionMeta && (
-            <p className="mt-3 max-w-2xl text-[18px] leading-7 text-ink/70">
-              {sectionMeta.blurb}
-            </p>
+            <>
+              <p className="mt-2 max-w-3xl font-display text-[18px] font-medium leading-7 text-ink/85">
+                {sectionMeta.subtitle}
+              </p>
+              <p className="mt-3 text-[20px] leading-8 text-ink/70">
+                {sectionMeta.blurb}
+              </p>
+            </>
           )}
         </div>
       </section>
@@ -95,7 +100,7 @@ export default async function CategoryPage({
         <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
           {/* Left sidebar: categories + recent posts */}
           <aside className="space-y-8" aria-label="Filters">
-            <div>
+            <div className="border border-[#ddd] p-4">
               <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Category</h6>
               <ul className="mt-3 space-y-1 text-sm">
                 {SECTIONS.map((s) => {
@@ -119,7 +124,7 @@ export default async function CategoryPage({
             </div>
 
             {recentPosts.length > 0 && (
-              <div>
+              <div className="border border-[#ddd] p-4">
                 <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Recent posts</h6>
                 <ul className="mt-3 space-y-4">
                   {recentPosts.map((p) => {

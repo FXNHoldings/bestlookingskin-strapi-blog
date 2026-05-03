@@ -107,6 +107,16 @@ article[data-testid^="product-"] .bg-white {
   display: none !important;
 }
 
+/* Post category page — unset any inherited / forced font-size and font-weight
+   on body text and paragraphs. Each <p> falls back to the browser default,
+   unless it carries its own font-size / font-weight Tailwind utility (utility
+   classes have lower specificity than this rule due to !important). */
+[data-testid^="category-"] body,
+[data-testid^="category-"] p {
+  font-size: unset !important;
+  font-weight: unset !important;
+}
+
 /* Post category page title (the category h1, e.g. "How-to Guides"). */
 [data-testid^="category-"] > header h1,
 [data-testid^="category-"] h1 {
@@ -163,9 +173,9 @@ article[data-testid^="product-"] .bg-white {
 /* Single-post page title — half the default fluid h1 scale. The post page
    wraps the article in <article data-testid="post-{slug}">; this rule
    targets the title h1 inside the post header. Stays fluid. */
-[data-testid^="post-"] > header h1 {
+[data-testid^="post-"] header h1 {
   font-size: clamp(1rem, 0.725rem + 1.4vw, 1.75rem) !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   line-height: 1.25 !important;
 }
 
@@ -329,9 +339,9 @@ article[data-testid^="product-"] .bg-white {
 }
 
 html, body {
-  background: theme('colors.paper');
+  background: #ffffff;
   color: theme('colors.ink');
-  font-family: var(--font-outfit);
+  font-family: var(--font-inter);
   font-feature-settings: 'cv11';
   font-weight: 300;
   font-size: 1rem;
@@ -344,7 +354,7 @@ html, body {
 
 body,
 body * {
-  font-family: var(--font-outfit) !important;
+  font-family: var(--font-inter) !important;
 }
 
 body :where(p, li, blockquote, figcaption, td, th, label, input, textarea, select) {
@@ -405,7 +415,7 @@ h6 { font-size: clamp(1rem,      0.92rem  + 0.4vw,   1.15rem)  !important; line-
 h1, h2, h3, h4, h5, h6,
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6 {
-  font-family: var(--font-urbanist) !important;
+  font-family: var(--font-inter) !important;
   font-weight: 700 !important;
   letter-spacing: 0 !important;
 }
@@ -418,14 +428,14 @@ h1, h2, h3, h4, h5, h6,
 .post-content h4, .post-content h5, .post-content h6,
 .post-content h1 *, .post-content h2 *, .post-content h3 *,
 .post-content h4 *, .post-content h5 *, .post-content h6 * {
-  font-family: var(--font-urbanist) !important;
+  font-family: var(--font-inter) !important;
   font-weight: 700 !important;
   letter-spacing: 0 !important;
 }
 
 /* Post body text follows the site Outfit body setting. */
 .post-content {
-  font-family: var(--font-outfit);
+  font-family: var(--font-inter);
   font-weight: 300;
 }
 
@@ -589,6 +599,10 @@ article[data-testid^="post-"] .post-content table th {
 .post-content .cegg-grid-card {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
               rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
+.post-content .cegg-card {
+  border: 1px solid #ddd !important;
 }
 
 /* Buttons inside grid cards use a darker blue (#0046be) to distinguish them
@@ -756,7 +770,7 @@ article[data-testid^="post-"][data-category="product-comparisons"] * {
   font-size: 19px;
   font-weight: 600;
   margin: 30px 0 0 0;
-  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   color: theme('colors.ink');
 }
 /* When the GSPB heading is rendered as a real <h2>/<h3> (i.e. it's a major
@@ -780,7 +794,7 @@ article[data-testid^="post-"][data-category="product-comparisons"] * {
 }
 .post-content .gspb_iconsList__item__text {
   margin-left: 15px;
-  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
 }
 .post-content .gspb_iconsList__item svg {
   width: 16px !important;
@@ -825,5 +839,5 @@ article[data-testid^="post-"][data-category="product-comparisons"] * {
   color: #111;
   z-index: 1;
   position: relative;
-  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
 }

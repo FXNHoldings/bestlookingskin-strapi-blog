@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { getProduct, listProducts, mediaUrl, type BlsProduct } from '@/lib/strapi';
 import { SITE } from '@/lib/site';
 import ProductCard from '@/components/ProductCard';
+import AdsenseUnit from '@/components/AdsenseUnit';
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -325,6 +326,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
           </div>{/* 2-col wrapper */}
         </div>{/* right side */}
       </div>{/* top section */}
+
+      <AdsenseUnit slot="3958661572" className="mt-12" />
 
       {/* Skin types tags (key features moved up next to the title/prices). */}
       {product.skinTypes && product.skinTypes.length > 0 && (

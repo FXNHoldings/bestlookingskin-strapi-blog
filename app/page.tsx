@@ -5,6 +5,7 @@ import { fmtDate, firstImageUrl, postPath } from '@/lib/format';
 import PostCard from '@/components/PostCard';
 import ArticlesCarousel from '@/components/ArticlesCarousel';
 import ProductsCarousel from '@/components/ProductsCarousel';
+import AdsenseUnit from '@/components/AdsenseUnit';
 import ToolsCarousel, { type ToolCard } from '@/components/ToolsCarousel';
 
 export const revalidate = 60;
@@ -139,6 +140,11 @@ export default async function HomePage() {
       />
 
       <Hero posts={heroPosts.length > 0 ? heroPosts : latest.slice(0, 5)} />
+      <section className="bg-white py-8 sm:py-10" data-testid="home-ad">
+        <div className="mx-auto max-w-7xl px-6">
+          <AdsenseUnit slot="3958661572" />
+        </div>
+      </section>
       <ProductSelectionTools />
       <CategoryShowcase />
       <WelcomeIntro />
