@@ -613,7 +613,7 @@ function FirstStepSection() {
       <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <div>
           <p className="font-inter text-xs font-semibold uppercase tracking-[0.28em] text-primary">Next step</p>
-          <h3 className="mt-4 font-display font-extrabold tracking-tight text-ink">First Step to Great Skin</h3>
+          <h3 className="mt-4 font-display font-extrabold tracking-tight text-ink">Steps, to Great Skin</h3>
         </div>
         <div className="space-y-6 border-l border-ink/10 pl-6 text-base font-normal leading-8 text-ink/72 sm:pl-10 sm:text-lg sm:leading-9">
           <p>
