@@ -110,7 +110,7 @@ export default function ContactForm() {
 }
 
 const inputClass =
-  'block w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-base text-ink placeholder:text-ink/40 transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+  'block w-full rounded-xl border border-ink/15 bg-[#f0f2f4] px-4 py-3 text-base text-ink placeholder:text-ink/40 transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 function Field({
   label,
