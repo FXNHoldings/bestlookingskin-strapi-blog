@@ -449,9 +449,9 @@ function CommitmentBlock() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Promise</p>
-            <h2 className="mt-4 max-w-xl text-white">
+            <h3 className="mt-4 max-w-xl text-white">
               Skincare advice.
-            </h2>
+            </h3>
           </div>
           <div className="max-w-2xl">
             <p className="text-base leading-8 text-white/72 sm:text-lg sm:leading-9">
