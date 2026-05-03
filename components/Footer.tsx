@@ -25,7 +25,7 @@ export default async function Footer() {
   return (
     <footer className="mt-16 bg-white" data-testid="site-footer">
       <div className="border-t border-ink/10">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_20%_20%_20%]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[55%_15%_15%_15%]">
 
           {/* Col 1 — Connect (no heading). */}
           <div>
