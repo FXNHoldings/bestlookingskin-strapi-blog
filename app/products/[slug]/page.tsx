@@ -193,6 +193,22 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
             {product.name}
           </h1>
 
+          {/* Social share icons under product title */}
+          <div className="mt-3 flex items-center gap-2" data-testid="product-share">
+            <ShareLink href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}`} bg="bg-[#1877f2]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99h-2.5V12h2.5V9.83c0-2.47 1.47-3.84 3.73-3.84 1.08 0 2.21.19 2.21.19v2.43h-1.25c-1.23 0-1.61.76-1.61 1.55V12h2.74l-.44 2.89h-2.3v6.99A10 10 0 0 0 22 12Z" /></svg>
+            </ShareLink>
+            <ShareLink href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}&text=${encodeURIComponent(product.name)}`} bg="bg-black">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.244 2H21.5l-7.55 8.63L22.75 22h-6.96l-5.45-7.13L4.04 22H.78l8.08-9.23L1.25 2h7.13l4.93 6.52L18.244 2Zm-1.22 18h1.93L7.06 4H5.04l11.984 16Z" /></svg>
+            </ShareLink>
+            <ShareLink href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}&description=${encodeURIComponent(product.name)}${cover ? `&media=${encodeURIComponent(cover)}` : ''}`} bg="bg-[#e60023]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 0a12 12 0 0 0-4.37 23.18c-.1-.93-.2-2.36.04-3.38.21-.91 1.4-5.79 1.4-5.79s-.36-.72-.36-1.78c0-1.67 1-2.91 2.18-2.91 1.03 0 1.53.78 1.53 1.71 0 1.04-.66 2.6-1 4.05-.29 1.21.61 2.2 1.8 2.2 2.16 0 3.83-2.28 3.83-5.58 0-2.92-2.1-4.96-5.1-4.96-3.47 0-5.51 2.6-5.51 5.29 0 1.05.4 2.17.91 2.78.1.12.11.23.08.36-.09.36-.28 1.16-.32 1.32-.05.21-.17.26-.39.16-1.45-.68-2.36-2.79-2.36-4.5 0-3.66 2.66-7.02 7.67-7.02 4.03 0 7.16 2.87 7.16 6.7 0 4-2.52 7.21-6.02 7.21-1.18 0-2.28-.61-2.66-1.34l-.72 2.75c-.26 1-.96 2.26-1.43 3.03A12 12 0 1 0 12 0z" /></svg>
+            </ShareLink>
+            <ShareLink href={`mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}`} bg="bg-[#3b5998]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+            </ShareLink>
+          </div>
+
           {/* 2-col layout: description block on left, offers panel on right */}
           <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,1fr)]">
             {/* Description + price + BUY */}
@@ -298,6 +314,22 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                 </p>
               )}
 
+              {/* Price comparison bar chart — directly under the
+                  "Last price update" line for at-a-glance merchant comparison.
+                  Renders whenever at least one offer has a price; with a single
+                  offer this is a one-bar reference. */}
+              {offerRows.filter((r) => r.price !== undefined).length >= 1 && (
+                <div className="mt-4" data-testid="price-comparison">
+                  <p className="text-xs font-bold uppercase tracking-wider text-ink/50">Price comparison</p>
+                  <div className="mt-2">
+                    <PriceComparisonChart
+                      rows={offerRows.filter((r) => r.price !== undefined)}
+                      currency={product.currency}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Wishlist + share */}
               <div className="mt-6 hidden items-center justify-end">
                 <button
@@ -310,21 +342,6 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                   </svg>
                   Add to wishlist
                 </button>
-              </div>
-
-              <div className="mt-3 flex items-center gap-2" data-testid="product-share">
-                <ShareLink href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}`} bg="bg-[#1877f2]">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99h-2.5V12h2.5V9.83c0-2.47 1.47-3.84 3.73-3.84 1.08 0 2.21.19 2.21.19v2.43h-1.25c-1.23 0-1.61.76-1.61 1.55V12h2.74l-.44 2.89h-2.3v6.99A10 10 0 0 0 22 12Z" /></svg>
-                </ShareLink>
-                <ShareLink href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}&text=${encodeURIComponent(product.name)}`} bg="bg-black">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.244 2H21.5l-7.55 8.63L22.75 22h-6.96l-5.45-7.13L4.04 22H.78l8.08-9.23L1.25 2h7.13l4.93 6.52L18.244 2Zm-1.22 18h1.93L7.06 4H5.04l11.984 16Z" /></svg>
-                </ShareLink>
-                <ShareLink href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}&description=${encodeURIComponent(product.name)}${cover ? `&media=${encodeURIComponent(cover)}` : ''}`} bg="bg-[#e60023]">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 0a12 12 0 0 0-4.37 23.18c-.1-.93-.2-2.36.04-3.38.21-.91 1.4-5.79 1.4-5.79s-.36-.72-.36-1.78c0-1.67 1-2.91 2.18-2.91 1.03 0 1.53.78 1.53 1.71 0 1.04-.66 2.6-1 4.05-.29 1.21.61 2.2 1.8 2.2 2.16 0 3.83-2.28 3.83-5.58 0-2.92-2.1-4.96-5.1-4.96-3.47 0-5.51 2.6-5.51 5.29 0 1.05.4 2.17.91 2.78.1.12.11.23.08.36-.09.36-.28 1.16-.32 1.32-.05.21-.17.26-.39.16-1.45-.68-2.36-2.79-2.36-4.5 0-3.66 2.66-7.02 7.67-7.02 4.03 0 7.16 2.87 7.16 6.7 0 4-2.52 7.21-6.02 7.21-1.18 0-2.28-.61-2.66-1.34l-.72 2.75c-.26 1-.96 2.26-1.43 3.03A12 12 0 1 0 12 0z" /></svg>
-                </ShareLink>
-                <ShareLink href={`mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(`${SITE.url}/products/${product.slug}`)}`} bg="bg-[#3b5998]">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
-                </ShareLink>
               </div>
 
             </div>{/* offers col */}
@@ -361,24 +378,6 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         <section className="mt-12">
           <h2 className="font-display font-bold tracking-tight text-ink">Ingredients</h2>
           <p className="mt-4 text-sm leading-7 text-ink/75">{product.ingredients}</p>
-        </section>
-      )}
-
-      {/* Price comparison bar chart — moved above related products so it
-          spans the full content width. Bars scale to the highest price;
-          the cheapest in-stock offer gets a "Best deal" badge. */}
-      {offerRows.filter((r) => r.price !== undefined).length >= 2 && (
-        <section className="mt-16" data-testid="price-comparison">
-          <h3 className="font-display font-bold tracking-tight text-ink">Price comparison</h3>
-          <p className="mt-2 text-sm text-ink/55">
-            How {product.name} stacks up across merchants. The cheapest in-stock offer is flagged as the best deal.
-          </p>
-          <div className="mt-6">
-            <PriceComparisonChart
-              rows={offerRows.filter((r) => r.price !== undefined)}
-              currency={product.currency}
-            />
-          </div>
         </section>
       )}
 
