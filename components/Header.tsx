@@ -101,7 +101,7 @@ export default async function Header() {
           data-testid="primary-nav"
           aria-label="Categories"
         >
-          <ul className="flex min-w-max items-center justify-end gap-x-4 text-base font-semibold capitalize tracking-normal">
+          <ul className="flex min-w-max items-center justify-end gap-x-8 text-base font-semibold capitalize tracking-normal">
             {nav.map((item) => {
               const testId = `nav-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
               const linkClass =
