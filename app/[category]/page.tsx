@@ -5,7 +5,6 @@ import { getCategory, listPosts, mediaUrl } from '@/lib/strapi';
 import { SECTIONS, SITE } from '@/lib/site';
 import { firstImageUrl, fmtDate, postPath } from '@/lib/format';
 import PostCard from '@/components/PostCard';
-import AdsenseUnit from '@/components/AdsenseUnit';
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -96,8 +95,6 @@ export default async function CategoryPage({
         <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
           {/* Left sidebar: categories + recent posts */}
           <aside className="space-y-8" aria-label="Filters">
-            <AdsenseUnit slot="3958661572" />
-
             <div>
               <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Category</h6>
               <ul className="mt-3 space-y-1 text-sm">

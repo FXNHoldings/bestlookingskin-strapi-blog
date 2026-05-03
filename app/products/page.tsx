@@ -2,7 +2,6 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { listProducts, listProductCategories, listProductBrands, type BlsProduct } from '@/lib/strapi';
 import ProductCard from '@/components/ProductCard';
-import AdsenseUnit from '@/components/AdsenseUnit';
 import { SITE } from '@/lib/site';
 
 export const revalidate = 60;
@@ -97,8 +96,6 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
           {/* Filters sidebar */}
           <aside className="space-y-8" aria-label="Filters">
-            <AdsenseUnit slot="3958661572" />
-
             {categories.length > 0 && (
               <div>
                 <h6 className="font-display text-base font-bold capitalize tracking-wider text-ink">Category</h6>
