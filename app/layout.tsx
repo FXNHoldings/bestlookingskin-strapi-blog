@@ -11,8 +11,10 @@ import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
+  // Default title kept under 60 chars for SEO. The longer SITE.tagline is
+  // still used in `description` and on-page copy where space allows.
   title: {
-    default: `${SITE.name} — ${SITE.tagline}`,
+    default: `${SITE.name} — Honest Skincare Reviews & Guides`,
     template: `%s · ${SITE.name}`,
   },
   description: SITE.description,

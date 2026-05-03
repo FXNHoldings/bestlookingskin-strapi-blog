@@ -76,9 +76,53 @@ async function strapiFetch<T>(path: string, params?: Record<string, unknown>, re
   return res.json();
 }
 
+// Local mirror of Strapi's `/uploads/*` tree, populated by
+// `scripts/migrate-cms-images.mjs`. Frontend always serves the local copy
+// so a slow/down CMS host never blocks page loads.
+const LOCAL_UPLOADS = '/cms-uploads';
+
+/** Convert a Strapi-hosted media URL (absolute on BASE, or relative
+ *  `/uploads/...`) to the locally cached path. Untouched if it isn't
+ *  Strapi-hosted (e.g. an Amazon CDN URL). */
+function toLocalUploadUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith(LOCAL_UPLOADS)) return url; // already rewritten
+  // Absolute URL on the Strapi host
+  if (url.startsWith(`${BASE}/uploads/`)) {
+    return url.replace(`${BASE}/uploads/`, `${LOCAL_UPLOADS}/`);
+  }
+  // Relative `/uploads/...`
+  if (url.startsWith('/uploads/')) {
+    return url.replace(/^\/uploads\//, `${LOCAL_UPLOADS}/`);
+  }
+  return url;
+}
+
 export function mediaUrl(img: StrapiImage): string | null {
   if (!img?.url) return null;
-  return img.url.startsWith('http') ? img.url : `${BASE}${img.url}`;
+  const absolute = img.url.startsWith('http') ? img.url : `${BASE}${img.url}`;
+  return toLocalUploadUrl(absolute);
+}
+
+/** Rewrite every `<img src="...cms.fxnstudio.com/uploads/...">` (and the
+ *  relative `/uploads/...` form) inside raw HTML so post bodies pull the
+ *  locally cached image instead of round-tripping through the CMS host. */
+function rewriteContentImages(html: string | undefined): string {
+  if (!html) return '';
+  return html
+    .replace(
+      new RegExp(`(<img\\b[^>]*?\\bsrc=["'])${BASE}/uploads/`, 'gi'),
+      `$1${LOCAL_UPLOADS}/`,
+    )
+    .replace(
+      /(<img\b[^>]*?\bsrc=["'])\/uploads\//gi,
+      `$1${LOCAL_UPLOADS}/`,
+    );
+}
+
+/** Apply content + media rewrites to a single post. Idempotent. */
+function localizePost<T extends BlsPost>(post: T): T {
+  return { ...post, content: rewriteContentImages(post.content) };
 }
 
 const POST_POPULATE = ['coverImage', 'ogImage', 'categories', 'gallery'];
@@ -99,12 +143,13 @@ export async function listPosts(
     ];
   }
 
-  return strapiFetch<ListResponse<BlsPost>>('bls-posts', {
+  const res = await strapiFetch<ListResponse<BlsPost>>('bls-posts', {
     sort: ['publishedAt:desc'],
     populate: POST_POPULATE,
     pagination: { page: opts.page ?? 1, pageSize: opts.pageSize ?? 12 },
     filters,
   });
+  return { ...res, data: res.data.map(localizePost) };
 }
 
 export async function getPost(slug: string): Promise<BlsPost | null> {
@@ -113,7 +158,8 @@ export async function getPost(slug: string): Promise<BlsPost | null> {
     populate: POST_POPULATE,
     pagination: { pageSize: 1 },
   });
-  return res.data?.[0] ?? null;
+  const post = res.data?.[0];
+  return post ? localizePost(post) : null;
 }
 
 export async function listCategories(): Promise<BlsCategory[]> {
