@@ -21,16 +21,23 @@ export default {
         muted: '#f0f2f4',
       },
       fontFamily: {
-        // Single font for the whole site — Inter, self-hosted.
-        // CSS variable defined in globals.css via @font-face.
-        sans: ['var(--font-urbanist)'],
+        // Inter is the body workhorse; Urbanist is the heading family
+        // (used by the global h1-h6 rule and post-content h2/h3/h4).
+        // Outfit and Fraunces are still loaded for elements that want them.
+        sans: ['var(--font-outfit)'],
         display: ['var(--font-urbanist)'],
-        // Aliases kept so existing `font-urbanist` / `font-outfit` utilities
-        // still resolve. Both point at Inter.
+        inter: ['var(--font-inter)'],
+        outfit: ['var(--font-outfit)'],
+        fraunces: ['var(--font-fraunces)'],
         urbanist: ['var(--font-urbanist)'],
-        outfit: ['var(--font-urbanist)'],
       },
-      maxWidth: { prose: '70ch' },
+      maxWidth: {
+        prose: '70ch',
+        // Site-wide content width override. Default Tailwind max-w-7xl is
+        // 80rem (1280px); we override it to 1366px so every layout that
+        // already uses `max-w-7xl mx-auto` widens without per-file edits.
+        '7xl': '1366px',
+      },
       borderRadius: {
         '3xl': '0.75rem',
       },

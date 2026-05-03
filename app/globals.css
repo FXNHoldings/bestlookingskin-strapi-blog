@@ -2,8 +2,178 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Self-hosted Urbanist (variable, latin) — public/fonts/Urbanist-Variable.ttf.
-   One file covers every weight 100-900 + matching italic. */
+/* Override Tailwind's symmetric .px-3 to be asymmetric: no left padding,
+   2rem right padding. Uses !important to win against Tailwind's utilities. */
+.px-3 {
+  padding-left: 0 !important;
+  padding-right: 2rem !important;
+}
+
+/* Product titles inside the home page only — 14px / 500 weight.
+   Scoped via [data-testid="home-page"] so other places using ProductCard
+   (e.g. /products listing, related-products on a single product page)
+   keep their default sizing. */
+[data-testid="home-page"] [data-testid^="product-"] h3,
+[data-testid="related-products"] [data-testid^="product-"] h3 {
+  font-size: clamp(0.8rem, 0.7rem + 0.3vw, 0.95rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+}
+
+/* Related-products media (img + video) on the single product page —
+   constrained to 70% width and centered. */
+[data-testid="related-products"] img,
+[data-testid="related-products"] video {
+  max-width: 70%;
+  height: auto;
+  margin: auto;
+}
+
+/* Home-page image thumbnails — height 70% and centered via auto margins. */
+[data-testid="home-page"] img {
+  height: 70%;
+  margin: auto;
+}
+
+/* Product single page — h4 inside the markdown description (Overview /
+   Key Features / Benefits section headings emitted by ProductDescription). */
+[data-testid^="product-"] h4 {
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem) !important;
+}
+
+/* Articles section on the home page — compact post tiles:
+   hide excerpt paragraph and shrink title to 14px / 500 weight.
+   .line-clamp-2 distinguishes the excerpt from the date paragraph. */
+[data-testid="articles"] [data-testid^="tile-"] h3 {
+  font-size: clamp(0.8rem, 0.7rem + 0.3vw, 0.95rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+}
+
+/* Post category pages (e.g. /skincare-how-to-guides) — tile titles. */
+[data-testid^="category-"] [data-testid^="tile-"] h3 {
+  font-size: clamp(1rem, 0.88rem + 0.45vw, 1.2rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+}
+
+/* Post category page title (the category h1, e.g. "How-to Guides"). */
+[data-testid^="category-"] > header h1,
+[data-testid^="category-"] h1 {
+  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem) !important;
+  line-height: 1.2 !important;
+}
+
+/* Post category page — all image thumbnails get a 4px corner radius.
+   Includes the cropping wrapper (rounded-3xl on PostCard tiles) so the
+   visible corner radius is actually 4px. */
+[data-testid^="category-"] img {
+  border-radius: 4px !important;
+}
+[data-testid^="category-"] .overflow-hidden,
+[data-testid^="category-"] .rounded,
+[data-testid^="category-"] .rounded-md,
+[data-testid^="category-"] .rounded-lg,
+[data-testid^="category-"] .rounded-xl,
+[data-testid^="category-"] .rounded-2xl,
+[data-testid^="category-"] .rounded-3xl {
+  border-radius: 4px !important;
+}
+[data-testid="articles"] [data-testid^="tile-"] p.line-clamp-2 {
+  display: none !important;
+}
+
+/* Home hero heading — overrides the site-wide h2 sizing (1.5rem) so the
+   tagline reads larger. Scoped so other h2s on the page stay 1.5rem. */
+[data-testid="home-hero"] h2 {
+  font-size: clamp(2rem, 1.4rem + 2.75vw, 3.25rem) !important;
+  line-height: 1.1 !important;
+}
+
+/* Welcome-intro h1 — site-wide h1 is 1.5rem; this scoped rule renders
+   the "Welcome to bestlooking.skin" heading at 2.5rem. */
+[data-testid="welcome-intro"] h1 {
+  font-size: clamp(1.75rem, 1.3rem + 2.25vw, 2.75rem) !important;
+  line-height: 1.05 !important;
+}
+
+/* Home-page section titles (Latest Arrivals / Articles / Product Reviews…) —
+   smaller than the default h3 scale so they sit alongside the eyebrow + grid
+   without dominating. Stays fluid. */
+[data-testid="home-page"] section h3 {
+  font-size: clamp(1.125rem, 0.95rem + 0.85vw, 1.5rem) !important;
+  line-height: 1.25 !important;
+}
+
+/* Single-post page title — half the default fluid h1 scale. The post page
+   wraps the article in <article data-testid="post-{slug}">; this rule
+   targets the title h1 inside the post header. Stays fluid. */
+[data-testid^="post-"] > header h1 {
+  font-size: clamp(1rem, 0.725rem + 1.4vw, 1.75rem) !important;
+  line-height: 1.25 !important;
+}
+
+/* Products listing / category page title (e.g. "Skincare Products"). */
+[data-testid="products-page"] h1 {
+  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem) !important;
+  line-height: 1.2 !important;
+}
+
+/* Home page: cards and images render with an 8px corner radius. Targets
+   all standard rounded utility classes (lg, xl, 2xl, 3xl) plus images and
+   overflow-hidden croppers. `rounded-full` is left alone so pill buttons
+   and pagination dots stay round. */
+[data-testid="home-page"] img {
+  border-radius: 8px;
+}
+[data-testid="home-page"] .overflow-hidden,
+[data-testid="home-page"] .rounded,
+[data-testid="home-page"] .rounded-md,
+[data-testid="home-page"] .rounded-lg,
+[data-testid="home-page"] .rounded-xl,
+[data-testid="home-page"] .rounded-2xl,
+[data-testid="home-page"] .rounded-3xl {
+  border-radius: 8px !important;
+}
+
+/* Self-hosted Inter (variable woff2) — body / sans workhorse. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable.woff2') format('woff2-variations'),
+       url('/fonts/InterVariable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2-variations'),
+       url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+/* Self-hosted Fraunces (variable, multi-axis: SOFT, WONK, opsz, wght).
+   Display / headlines. */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Fraunces-Variable.ttf') format('truetype-variations'),
+       url('/fonts/Fraunces-Variable.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Fraunces-Italic-Variable.ttf') format('truetype-variations'),
+       url('/fonts/Fraunces-Italic-Variable.ttf') format('truetype');
+}
+
+/* Self-hosted Urbanist (variable, wght axis) — heading workhorse. */
 @font-face {
   font-family: 'Urbanist';
   font-style: normal;
@@ -21,40 +191,79 @@
        url('/fonts/Urbanist-Italic-Variable.ttf') format('truetype');
 }
 
+/* Self-hosted Outfit (variable woff2) — site-wide default. */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Outfit-Variable-latin.woff2') format('woff2-variations'),
+       url('/fonts/Outfit-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Outfit-Variable-latin-ext.woff2') format('woff2-variations'),
+       url('/fonts/Outfit-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   color-scheme: light;
+  --font-outfit:   'Outfit',   system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-inter:    'Inter',    system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-fraunces: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --font-urbanist: 'Urbanist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  /* Aliases so existing Tailwind utilities (font-inter / font-outfit / font-display)
-     all resolve to Urbanist without touching consumers. */
-  --font-inter: var(--font-urbanist);
-  --font-outfit: var(--font-urbanist);
 }
 
 html, body {
   background: theme('colors.paper');
   color: theme('colors.ink');
-  font-family: var(--font-urbanist);
+  font-family: var(--font-outfit);
   font-weight: 400;
-  font-size: 1rem;
+  /* Fluid body type: 15.2px on a 320px viewport, 17px on a 1366px+ viewport. */
+  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem);
   letter-spacing: 0.2px;
 }
 
-/* Site-wide h1/h2/h3 sizing. Uses !important to override per-component
-   Tailwind utility classes (e.g. text-5xl) without touching every file. */
-h1 { font-size: 2.5rem !important; line-height: 1.1; }
-h2 { font-size: 1.5rem !important; line-height: 1.25; }
-h3 { font-size: 1.2rem !important; line-height: 1.3; }
+/* Modern fluid heading scale (1.25 ratio, "major third"). Each size scales
+   smoothly between a 320px viewport and 1366px+ via clamp(min, ideal, max).
+   !important wins against Tailwind utilities like text-3xl/font-bold so the
+   scale is consistent across the site without per-component edits. */
+h1 { font-size: clamp(2rem,      1.45rem  + 2.75vw,  3.5rem)   !important; line-height: 1.15 !important; }
+h2 { font-size: clamp(1.625rem,  1.2rem   + 2.125vw, 2.75rem)  !important; line-height: 1.2  !important; }
+h3 { font-size: clamp(1.375rem,  1.1rem   + 1.375vw, 2.125rem) !important; line-height: 1.25 !important; }
+h4 { font-size: clamp(1.15rem,   0.99rem  + 0.8vw,   1.625rem) !important; line-height: 1.3  !important; }
+h5 { font-size: clamp(1.05rem,   0.95rem  + 0.5vw,   1.3rem)   !important; line-height: 1.35 !important; }
+h6 { font-size: clamp(1rem,      0.92rem  + 0.4vw,   1.15rem)  !important; line-height: 1.4  !important; }
 
-/* All headings (site chrome + post body) — Urbanist, the single site font. */
+/* All headings → Urbanist family + 0.2px tracking. Size is set by the fluid
+   scale above; weight is left to per-component Tailwind utilities. */
 h1, h2, h3, h4, h5, h6,
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6 {
-  font-family: var(--font-urbanist);
+  font-family: var(--font-urbanist) !important;
+  letter-spacing: 0.2px !important;
 }
 
-/* Post body text */
+/* Imported post bodies (WordPress + Elementor) ship inline `font-family`
+   on heading children (<span>, <strong>, etc.). Force-override them so
+   every heading inside .post-content reads as Urbanist regardless of
+   nested inline styles. */
+.post-content h1, .post-content h2, .post-content h3,
+.post-content h4, .post-content h5, .post-content h6,
+.post-content h1 *, .post-content h2 *, .post-content h3 *,
+.post-content h4 *, .post-content h5 *, .post-content h6 * {
+  font-family: var(--font-urbanist) !important;
+  letter-spacing: 0.2px !important;
+}
+
+/* Post body text → Outfit */
 .post-content {
-  font-family: var(--font-urbanist);
+  font-family: var(--font-outfit);
   font-weight: 400;
 }
 

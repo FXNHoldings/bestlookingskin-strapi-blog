@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { listPosts, type BlsPost } from '@/lib/strapi';
+import { listPosts, listProducts, type BlsPost, type BlsProduct } from '@/lib/strapi';
 import { SECTIONS, SITE } from '@/lib/site';
 import { fmtDate, firstImageUrl, postPath } from '@/lib/format';
 import PostCard from '@/components/PostCard';
 import ArticlesCarousel from '@/components/ArticlesCarousel';
+import ProductsCarousel from '@/components/ProductsCarousel';
 
 export const revalidate = 60;
 
@@ -55,6 +56,21 @@ export default async function HomePage() {
     ),
   );
 
+  // Latest Arrivals — most recently added products (max 8 for the carousel)
+  const latestProducts = await listProducts({ sort: 'newest', pageSize: 10 })
+    .then((r) => r.data)
+    .catch(() => [] as BlsProduct[]);
+
+  // Facial Serums section — products in the bls-product-category 'facial-serums'
+  const facialSerumProducts = await listProducts({ category: 'facial-serums', sort: 'newest', pageSize: 10 })
+    .then((r) => r.data)
+    .catch(() => [] as BlsProduct[]);
+
+  // Facial Cleansers section — products in the bls-product-category 'facial-cleansers'
+  const facialCleanserProducts = await listProducts({ category: 'facial-cleansers', sort: 'newest', pageSize: 10 })
+    .then((r) => r.data)
+    .catch(() => [] as BlsProduct[]);
+
   // Latest across all sections (de-duped)
   const latest: BlsPost[] = [];
   const seen = new Set<number>();
@@ -93,24 +109,17 @@ export default async function HomePage() {
       <ProductSelectionTools />
       <CategoryShowcase />
       <WelcomeIntro />
-      <LatestArrivals posts={latest.slice(0, 8)} />
+      <LatestArrivals products={latestProducts} />
       <CommitmentBlock />
-      {/* Render Moisturizer / Serum / Eye Cream first (indexes 0-2)… */}
-      {SKINCARE_TYPES.slice(0, 3).map((type, i) => (
-        <SkincareTypeSection key={type.label} label={type.label} query={type.query} posts={perSkincareType[i] ?? []} alt={i % 2 === 1} />
-      ))}
-      {/* …then the "Our Goal" article-list block… */}
+      {/* Facial Serums product carousel (replaces former Moisturizer / Serum
+          / Eye Cream post sections). Pulls from the bls-product-category
+          'facial-serums' — create that category in Strapi or via the importer
+          (BLS_PRODUCT_CATEGORY=facial-serums) to populate it. */}
+      <FacialSerumsSection products={facialSerumProducts} />
       <OurGoalSection posts={latest.slice(0, 12)} />
-      {/* …then Anti-Aging (index 3) and the rest. */}
-      {SKINCARE_TYPES.slice(3).map((type, i) => {
-        const idx = i + 3;
-        return (
-          <SkincareTypeSection key={type.label} label={type.label} query={type.query} posts={perSkincareType[idx] ?? []} alt={idx % 2 === 1} />
-        );
-      })}
-      {reviews.length > 0 && <ProductReviews posts={reviews.slice(0, 6)} />}
+      <FacialCleansersSection products={facialCleanserProducts} />
       <FirstStepSection />
-      {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 8)} />}
+      {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 5)} />}
       <ContactStrip />
     </div>
   );
@@ -124,9 +133,9 @@ function Hero() {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
         {/* Left column — heading + intro */}
         <div>
-          <h1 className="font-display font-bold tracking-tight text-ink">
+          <h2 className="font-display font-bold tracking-tight text-ink">
             Your Guide to the Best Skincare.
-          </h1>
+          </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-ink/70 sm:text-lg">
             {SITE.name} is your go-to destination for comprehensive guidance on achieving healthy,
             radiant, glowing skin. Our mission is to provide you with the most current and accurate
@@ -234,12 +243,12 @@ function CategoryShowcase() {
   return (
     <section className="bg-paper py-14" data-testid="category-showcase">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-3">
           {SHOWCASE.map((tile) => (
             <Link
               key={tile.label}
               href={tile.href}
-              className={`group relative overflow-hidden rounded-2xl ${tile.span}`}
+              className={`group relative overflow-hidden rounded-md ${tile.span}`}
               data-testid={`showcase-${tile.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -249,8 +258,8 @@ function CategoryShowcase() {
                 className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
               />
               {/* Subtle dark gradient at the bottom for label legibility */}
-              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent" aria-hidden />
-              <span className="absolute bottom-5 left-6 font-display text-2xl font-bold text-white drop-shadow-md transition group-hover:translate-x-1">
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/40 to-transparent" aria-hidden />
+              <span className="absolute bottom-4 left-5 font-display text-[1.25rem] font-bold tracking-tight text-white transition group-hover:translate-x-1">
                 {tile.label}
               </span>
             </Link>
@@ -268,9 +277,9 @@ function WelcomeIntro() {
     <section className="bg-paper py-16 sm:py-20" data-testid="welcome-intro">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
         <div>
-          <h2 className="font-display font-extrabold leading-[1.05] tracking-tight text-ink">
+          <h1 className="font-display font-extrabold leading-[1.05] tracking-tight text-ink">
             Welcome to<br />bestlooking.skin
-          </h2>
+          </h1>
         </div>
         <div className="space-y-6 text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
           <p>
@@ -296,12 +305,17 @@ function WelcomeIntro() {
 
 /* ---------- LATEST ARRIVALS ---------- */
 
-function LatestArrivals({ posts }: { posts: BlsPost[] }) {
-  if (posts.length === 0) {
+function LatestArrivals({ products }: { products: BlsProduct[] }) {
+  if (products.length === 0) {
     return (
       <section className="bg-paper py-16" data-testid="latest-arrivals-empty">
         <div className="mx-auto max-w-7xl px-6">
-          <SectionHeader eyebrow="Just in" title="Latest Arrivals" subtitle="Fresh posts will appear here once content is imported." />
+          <SectionHeader
+            eyebrow="Just in"
+            title="Recently Added"
+            subtitle="Fresh products will appear here once they're added to the catalog."
+            viewAll="/products"
+          />
         </div>
       </section>
     );
@@ -309,11 +323,14 @@ function LatestArrivals({ posts }: { posts: BlsPost[] }) {
   return (
     <section className="bg-paper py-16" data-testid="latest-arrivals">
       <div className="mx-auto max-w-7xl px-6">
-        <SectionHeader eyebrow="Just in" title="Latest Arrivals" subtitle="The newest reviews, comparisons and guides — fresh from the editorial team." />
-        <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {posts.slice(0, 4).map((p) => (
-            <PostCard key={p.id} post={p} variant="tile" />
-          ))}
+        <SectionHeader
+          eyebrow="Just in"
+          title="Recently Added"
+          subtitle="The newest products in the catalog — handpicked for your routine."
+          viewAll="/products"
+        />
+        <div className="mt-10">
+          <ProductsCarousel products={products} />
         </div>
       </div>
     </section>
@@ -350,6 +367,62 @@ function CommitmentBlock() {
             skincare regimen.
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- FACIAL SERUMS — products carousel ---------- */
+
+function FacialSerumsSection({ products }: { products: BlsProduct[] }) {
+  return (
+    <section className="bg-paper py-16" data-testid="facial-serums">
+      <div className="mx-auto max-w-7xl px-6">
+        <SectionHeader
+          eyebrow="Editor's pick"
+          title="Facial Serums"
+          subtitle="Targeted treatments — vitamin C, hyaluronic, retinol and more."
+          viewAll="/products?category=facial-serums"
+        />
+        {products.length === 0 ? (
+          <div className="mt-10 rounded-3xl border border-dashed border-ink/15 px-6 py-12 text-center text-sm text-ink/55">
+            No products in the <strong>Facial Serums</strong> product category yet — create the
+            category in Strapi (BLS · Product Category) or run the Apify importer with{' '}
+            <code className="rounded bg-muted px-1.5 py-0.5">BLS_PRODUCT_CATEGORY=facial-serums</code>.
+          </div>
+        ) : (
+          <div className="mt-10">
+            <ProductsCarousel products={products} />
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- FACIAL CLEANSERS — products carousel ---------- */
+
+function FacialCleansersSection({ products }: { products: BlsProduct[] }) {
+  return (
+    <section className="bg-muted py-16" data-testid="facial-cleansers">
+      <div className="mx-auto max-w-7xl px-6">
+        <SectionHeader
+          eyebrow="Editor's pick"
+          title="Facial Cleansers"
+          subtitle="Wash, prep and reset — the first step in any solid routine."
+          viewAll="/products?category=facial-cleansers"
+        />
+        {products.length === 0 ? (
+          <div className="mt-10 rounded-3xl border border-dashed border-ink/15 bg-paper px-6 py-12 text-center text-sm text-ink/55">
+            No products in the <strong>Facial Cleansers</strong> product category yet —
+            create the category in Strapi (BLS · Product Category) or run the Apify importer with{' '}
+            <code className="rounded bg-white px-1.5 py-0.5">BLS_PRODUCT_CATEGORY=facial-cleansers</code>.
+          </div>
+        ) : (
+          <div className="mt-10">
+            <ProductsCarousel products={products} />
+          </div>
+        )}
       </div>
     </section>
   );
@@ -398,69 +471,72 @@ function SkincareTypeSection({
 
 /* ---------- OUR GOAL — research blurb + 2-column article links ---------- */
 
-function OurGoalSection({ posts }: { posts: BlsPost[] }) {
-  // Two even columns of links — split posts in half
-  const half = Math.ceil(posts.length / 2);
-  const colA = posts.slice(0, half);
-  const colB = posts.slice(half, half * 2);
+/* Our Goal — editorial layout inspired by harrygeorge.design:
+   - Big multi-color heading at top (key phrases dimmed for emphasis)
+   - 3-col row below: empty whitespace / body copy + CTA / right-aligned
+     pillar list with + icons
+   `posts` arg kept for parent compatibility; not rendered in this layout. */
+const GOAL_PILLARS: { label: string; href: string }[] = [
+  { label: 'How-to Guides', href: '/skincare-how-to-guides' },
+  { label: 'Reviews',       href: '/skincare-reviews-path-to-glowing-skin' },
+  { label: 'Comparisons',   href: '/best-product-comparisons' },
+  { label: 'Top Rated',     href: '/top-rated-skincare-for-glowing-skin' },
+];
+
+function OurGoalSection({ posts: _posts }: { posts: BlsPost[] }) {
   return (
-    <section className="bg-paper py-16 sm:py-20" data-testid="our-goal">
+    <section className="bg-paper py-20 sm:py-28" data-testid="our-goal">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
-          {/* Left — heading + body */}
-          <div>
-            <h2 className="font-display font-extrabold tracking-tight text-ink">Our Goal</h2>
-            <p className="mt-5 text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
-              We conduct rigorous and thorough research, comprehensive product comparisons, and
-              detailed reviews.
+        {/* Editorial heading — most of the line is ink, key phrases muted to
+            text-ink/30 so they read as a quieter second voice. */}
+        <h2 className="font-display font-bold tracking-tight text-ink"
+            style={{ fontSize: '2.5rem', lineHeight: 1.2 }}>
+          Our goal is to equip you with the information to make
+          <span className="text-ink/30"> informed skincare choices</span>
+          {' '}— covering every skin type, every concern, and
+          <span className="text-ink/30"> every routine</span>
+          {' '}along the way.
+        </h2>
+
+        {/* 3-col row: empty / body + CTA / pillar list with + icons */}
+        <div className="mt-16 grid gap-10 lg:grid-cols-[1fr_1fr_1fr] lg:gap-12">
+          {/* Left — intentional whitespace */}
+          <div className="hidden lg:block" aria-hidden />
+
+          {/* Middle — body paragraphs + CTA */}
+          <div className="text-sm leading-6 text-ink/70 sm:text-base sm:leading-7">
+            <p>
+              We conduct rigorous research, comprehensive product comparisons, and detailed
+              reviews. Skincare is not a ‘one-size-fits-all’ scenario — what works for one
+              person may not work for another, so we cover a wide array of products to suit
+              different skin types and concerns.
             </p>
-            <p className="mt-5 text-base leading-7 text-ink/75">
-              Our goal is to equip you with all the necessary information you need to make an
-              informed and wise decision about your skincare routine. We fully understand that
-              skincare is not a ‘one-size-fits-all’ scenario — what might work for one individual
-              may not work for another. This is precisely why we endeavor to cover a wide array of
-              products, ensuring we cater to a multitude of skin types and address various skin
-              concerns so everyone can find something suitable.
+            <p className="mt-4">
+              Whether you’re just starting out or a seasoned expert, we publish how-to guides,
+              ingredient deep-dives, and honest reviews to help you understand exactly how each
+              product fits into your routine.
             </p>
+            
           </div>
 
-          {/* Right — intro paragraph above two columns of post links */}
-          <div>
-            <p className="text-base leading-7 text-ink/75 sm:text-lg sm:leading-8">
-              In addition to our product reviews and recommendations, we offer a plethora of
-              informative articles and easy-to-follow how-to guides. These resources are designed to
-              help you understand the intricacies of skincare, learn how to effectively use
-              different products, and address specific skin issues. Whether you’re a skincare novice
-              just beginning your journey or a seasoned expert in search of new insights, we have a
-              little something for everyone at BestLooking.Skin.
-            </p>
-            <div className="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2">
-              <GoalLinkColumn posts={colA} />
-              <GoalLinkColumn posts={colB} />
-            </div>
-          </div>
+          {/* Right — pillar list with + icons (Strategy / UX / Design / Interaction
+              equivalent for this site: the four primary content tracks). */}
+          <ul className="divide-y divide-ink/10 border-t border-ink/10" data-testid="goal-pillars">
+            {GOAL_PILLARS.map((p) => (
+              <li key={p.label}>
+                <Link
+                  href={p.href}
+                  className="flex items-center justify-between py-3 text-sm font-medium text-ink/85 transition-colors hover:text-primary"
+                >
+                  <span>{p.label}</span>
+                  <span aria-hidden className="text-base text-ink/40 transition-colors group-hover:text-primary">+</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
-  );
-}
-
-function GoalLinkColumn({ posts }: { posts: BlsPost[] }) {
-  if (posts.length === 0) return <div />;
-  return (
-    <ul className="space-y-4 text-base leading-snug">
-      {posts.map((p) => (
-        <li key={p.id} className="flex items-start gap-3">
-          <span aria-hidden className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold leading-none text-primary">+</span>
-          <Link
-            href={postPath(p)}
-            className="font-medium text-[#1556ee] transition hover:text-primary hover:underline"
-          >
-            {p.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -576,7 +652,7 @@ function SectionHeader({
     <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{eyebrow}</p>
-        <h2 className="mt-3 font-display font-bold tracking-tight text-ink">{title}</h2>
+        <h3 className="mt-3 font-display font-bold tracking-tight text-ink">{title}</h3>
         <p className="mt-3 text-sm leading-7 text-ink/65 sm:text-base">{subtitle}</p>
       </div>
       {viewAll && (

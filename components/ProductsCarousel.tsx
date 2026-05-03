@@ -1,20 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { BlsPost } from '@/lib/strapi';
-import PostCard from '@/components/PostCard';
+import type { BlsProduct } from '@/lib/strapi';
+import ProductCard from '@/components/ProductCard';
 
 /**
- * Articles auto-sliding carousel.
- * Renders up to 8 posts in 2 pages of 4 (lg). Auto-advances every 5s.
+ * Products auto-sliding carousel.
+ * Renders up to 10 products in 2 pages of 5 (lg). Auto-advances every 5s.
  * Pauses on hover/focus. Falls back to a single grid below `lg`.
  */
 const PER_PAGE = 5;
-const MAX = 5;
+const MAX = 10;
 const INTERVAL_MS = 5000;
 
-export default function ArticlesCarousel({ posts }: { posts: BlsPost[] }) {
-  const items = posts.slice(0, MAX);
+export default function ProductsCarousel({ products }: { products: BlsProduct[] }) {
+  const items = products.slice(0, MAX);
   const pageCount = Math.max(1, Math.ceil(items.length / PER_PAGE));
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -30,13 +30,12 @@ export default function ArticlesCarousel({ posts }: { posts: BlsPost[] }) {
   return (
     <div
       className="relative"
-      data-testid="articles-carousel"
+      data-testid="products-carousel"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      {/* Track */}
       <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-700 ease-in-out"
@@ -52,7 +51,7 @@ export default function ArticlesCarousel({ posts }: { posts: BlsPost[] }) {
                 aria-hidden={i !== page}
               >
                 {slice.map((p) => (
-                  <PostCard key={p.id} post={p} variant="tile" thumbBg="bg-white" />
+                  <ProductCard key={p.id} product={p} variant="tile" thumbBg="bg-white" />
                 ))}
               </div>
             );
@@ -60,9 +59,8 @@ export default function ArticlesCarousel({ posts }: { posts: BlsPost[] }) {
         </div>
       </div>
 
-      {/* Pagination dots */}
       {pageCount > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2" role="tablist" aria-label="Article slides">
+        <div className="mt-8 flex items-center justify-center gap-2" role="tablist" aria-label="Product slides">
           {Array.from({ length: pageCount }).map((_, i) => (
             <button
               key={i}

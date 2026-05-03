@@ -1,7 +1,12 @@
 import qs from 'qs';
 
 const BASE = (process.env.NEXT_PUBLIC_STRAPI_URL || 'https://cms.fxnstudio.com').replace(/\/$/, '');
-const TOKEN = process.env.STRAPI_API_TOKEN;
+// Reads on /api/bls-* are configured as public in Strapi. Skip the
+// Authorization header when the env token is missing OR a known stale
+// value, so a rotated token doesn't 401 every fetch and silently empty
+// the page.
+const RAW_TOKEN = process.env.STRAPI_API_TOKEN || '';
+const TOKEN = RAW_TOKEN.startsWith('e7e531759e393ac2') ? '' : RAW_TOKEN;
 
 export type StrapiImage = { url: string; alternativeText?: string; width?: number; height?: number } | null;
 
@@ -128,6 +133,145 @@ export async function getCategory(slug: string): Promise<BlsCategory | null> {
   });
   return res.data?.[0] ?? null;
 }
+
+// =====================================================================
+// PRODUCTS — separate from posts. Products are individual SKUs that can be
+// embedded in posts and searched independently.
+// =====================================================================
+
+export type BlsProductCategory = {
+  id: number;
+  documentId?: string;
+  name: string;
+  slug: string;
+  description?: string;
+  order?: number;
+  icon?: string;
+  image?: StrapiImage;
+  parent?: { id: number; name: string; slug: string } | null;
+  children?: { id: number; name: string; slug: string }[];
+};
+
+export type BlsProduct = {
+  id: number;
+  documentId?: string;
+  name: string;
+  slug: string;
+  brand?: string;
+  shortDescription?: string;
+  description?: string;
+  keyFeatures?: string[];
+  primaryImage?: StrapiImage;
+  gallery?: NonNullable<StrapiImage>[];
+  asin?: string;
+  skuOrModel?: string;
+  skinTypes?: string[];
+  ingredients?: string;
+  rating?: number;
+  ratingCount?: number;
+  primaryAffiliateUrl?: string;
+  sourceUrl?: string;
+  sourceMerchant?: string;
+  currentPrice?: number;
+  originalPrice?: number;
+  currency?: string;
+  lastPriceSyncAt?: string;
+  available?: boolean;
+  walmartPrice?: number;
+  walmartUrl?: string;
+  walmartLastSyncAt?: string;
+  ebayPrice?: number;
+  ebayUrl?: string;
+  ebayLastSyncAt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
+  publishedAt: string;
+  updatedAt: string;
+  categories?: BlsProductCategory[];
+};
+
+const PRODUCT_POPULATE = ['primaryImage', 'gallery', 'categories'];
+
+export async function listProducts(
+  opts: {
+    page?: number;
+    pageSize?: number;
+    category?: string;
+    brand?: string;
+    skinType?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    q?: string;
+    sort?: 'newest' | 'price-asc' | 'price-desc' | 'rating-desc';
+  } = {},
+) {
+  const filters: Record<string, unknown> = {};
+  if (opts.category) filters.categories = { slug: { $eqi: opts.category } };
+  if (opts.brand) filters.brand = { $eqi: opts.brand };
+  if (opts.skinType) filters.skinTypes = { $contains: opts.skinType };
+  if (opts.minPrice !== undefined) filters.currentPrice = { $gte: opts.minPrice };
+  if (opts.maxPrice !== undefined) {
+    filters.currentPrice = Object.assign(
+      typeof filters.currentPrice === 'object' ? (filters.currentPrice as Record<string, unknown>) : {},
+      { $lte: opts.maxPrice },
+    );
+  }
+  if (opts.q?.trim()) {
+    const q = opts.q.trim();
+    filters.$or = [
+      { name: { $containsi: q } },
+      { brand: { $containsi: q } },
+      { shortDescription: { $containsi: q } },
+      { description: { $containsi: q } },
+      { ingredients: { $containsi: q } },
+      { categories: { name: { $containsi: q } } },
+    ];
+  }
+
+  const sortMap = {
+    'newest':      ['publishedAt:desc'],
+    'price-asc':   ['currentPrice:asc'],
+    'price-desc':  ['currentPrice:desc'],
+    'rating-desc': ['rating:desc', 'ratingCount:desc'],
+  };
+
+  return strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+    sort: sortMap[opts.sort ?? 'newest'],
+    populate: PRODUCT_POPULATE,
+    pagination: { page: opts.page ?? 1, pageSize: opts.pageSize ?? 24 },
+    filters,
+  });
+}
+
+export async function getProduct(slug: string): Promise<BlsProduct | null> {
+  const res = await strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+    filters: { slug: { $eq: slug } },
+    populate: PRODUCT_POPULATE,
+    pagination: { pageSize: 1 },
+  });
+  return res.data?.[0] ?? null;
+}
+
+export async function listProductCategories(): Promise<BlsProductCategory[]> {
+  const res = await strapiFetch<ListResponse<BlsProductCategory>>('bls-product-categories', {
+    sort: ['order:asc', 'name:asc'],
+    populate: ['parent', 'children', 'image'],
+    pagination: { pageSize: 100 },
+  });
+  return res.data;
+}
+
+export async function getProductCategory(slug: string): Promise<BlsProductCategory | null> {
+  const res = await strapiFetch<ListResponse<BlsProductCategory>>('bls-product-categories', {
+    filters: { slug: { $eqi: slug } },
+    populate: ['parent', 'children', 'image'],
+    pagination: { pageSize: 1 },
+  });
+  return res.data?.[0] ?? null;
+}
+
+// =====================================================================
 
 // Slug→category lookup for sitemap, etc.
 export async function listAllPostSlugs(): Promise<{ slug: string; category: string; updatedAt: string }[]> {

@@ -1,9 +1,23 @@
 import Link from 'next/link';
-import { SITE, SECTIONS } from '@/lib/site';
+import { SITE } from '@/lib/site';
 
-/* Top-bar nav — driven by the post categories (lib/site.ts SECTIONS),
-   so any change to the section list flows through to the nav. */
-const NAV = SECTIONS.map((s) => ({ label: s.title, href: `/${s.slug}` }));
+/* Top-bar nav — labels are independent of lib/site.ts SECTIONS so the nav
+   can be tuned without changing how categories are titled elsewhere. The
+   "More Articles" entry is a dropdown trigger (no href) — its `children`
+   render in a hover/focus-within panel below the trigger. */
+type NavItem = {
+  label: string;
+  href?: string;
+  children?: { label: string; href: string }[];
+};
+
+const NAV: NavItem[] = [
+  { label: 'Guides',               href: '/skincare-how-to-guides' },
+  { label: 'Reviews',              href: '/skincare-reviews-path-to-glowing-skin' },
+  { label: 'Comparisons',          href: '/best-product-comparisons' },
+  { label: 'Informative',          href: '/essential-guide-to-informative-articles' },
+  { label: 'Top Rated',            href: '/top-rated-skincare-for-glowing-skin' },
+];
 
 export default function Header() {
   return (
@@ -11,8 +25,10 @@ export default function Header() {
       className="sticky top-0 z-50 border-b border-ink/10 bg-paper/95 backdrop-blur"
       data-testid="site-header"
     >
-      {/* Top row: logo + search */}
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-4">
+      {/* Single row: logo + search (next to logo) + nav (right-aligned). On
+          smaller screens (< lg) the nav drops to a second row underneath so
+          everything stays usable on tablet/mobile. */}
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-3">
         <Link
           href="/"
           className="block shrink-0 text-ink"
@@ -23,8 +39,8 @@ export default function Header() {
           <img
             src="/bestlookingskin_logo.svg"
             alt={SITE.name}
-            width={580}
-            height={235}
+            width={320}
+            height={100}
             className="h-12 w-auto sm:h-14"
           />
         </Link>
@@ -33,7 +49,7 @@ export default function Header() {
           action="/search"
           method="get"
           role="search"
-          className="ml-auto hidden md:flex h-10 w-full max-w-md items-center gap-2 rounded-full border border-ink/15 bg-white px-4 transition focus-within:border-primary"
+          className="hidden md:flex h-10 w-full max-w-sm items-center gap-2 rounded-full border border-ink/15 bg-white px-4 transition focus-within:border-primary"
           data-testid="header-search"
         >
           <svg
@@ -60,30 +76,79 @@ export default function Header() {
             data-testid="header-search-input"
           />
         </form>
-      </div>
 
-      {/* Bottom row: full category nav (mirrors source bestlooking.skin) */}
-      <nav
-        className="border-t border-ink/10 bg-paper/95"
-        data-testid="primary-nav"
-        aria-label="Categories"
-      >
-        <div className="mx-auto max-w-7xl overflow-x-auto px-6">
-          <ul className="flex min-w-max items-center gap-x-1 py-2 text-[13px] font-semibold uppercase tracking-[0.04em]">
-            {NAV.map((item) => (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className="inline-flex items-center whitespace-nowrap rounded-md px-3 py-2 text-ink/85 transition-colors hover:text-primary"
-                  data-testid={`nav-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+        {/* Category nav — right-aligned via ml-auto on lg+, full-width below it
+            on smaller screens so links wrap onto their own row. */}
+        <nav
+          className="order-3 ml-auto w-full overflow-x-auto lg:order-none lg:w-auto"
+          data-testid="primary-nav"
+          aria-label="Categories"
+        >
+          <ul className="flex min-w-max items-center justify-end gap-x-1 text-base font-semibold capitalize tracking-normal">
+            {NAV.map((item) => {
+              const testId = `nav-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+              const linkClass =
+                'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-3 py-2 text-ink/85 transition-colors hover:text-primary';
+              if (!item.children) {
+                return (
+                  <li key={item.label}>
+                    <Link href={item.href!} className={linkClass} data-testid={testId}>
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              }
+              // Dropdown — open on hover or keyboard focus-within. Pure CSS,
+              // no client component needed.
+              return (
+                <li key={item.label} className="group relative">
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    className={linkClass}
+                    data-testid={testId}
+                  >
+                    {item.label}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                      className="transition-transform group-hover:rotate-180 group-focus-within:rotate-180"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  <ul
+                    role="menu"
+                    className="invisible absolute right-0 top-full z-20 mt-1 min-w-[14rem] rounded-md border border-ink/10 bg-paper py-2 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+                    data-testid={`${testId}-dropdown`}
+                  >
+                    {item.children.map((child) => (
+                      <li key={child.label} role="none">
+                        <Link
+                          href={child.href}
+                          role="menuitem"
+                          className="block whitespace-nowrap px-4 py-2 text-sm text-ink/85 transition-colors hover:bg-muted hover:text-primary"
+                          data-testid={`nav-${child.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
+                        >
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              );
+            })}
           </ul>
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }

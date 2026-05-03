@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { SITE, SECTIONS } from '@/lib/site';
 
 const CONNECT_TAGLINE =
-  'Our platform offers comprehensive product offerings, reviews, informative guides, and articles. ' +
-  'Users can find top-rated products, compare prices, and join a tech community.';
+  'We believe in demystifying the science behind the products, breaking down complex ' +
+  'terminologies and processes into understandable information that our readers can ' +
+  'apply in their skincare journey.';
 
 const CONTACT_EMAIL = 'hello@bestlooking.skin';
 
@@ -12,32 +13,10 @@ export default function Footer() {
   return (
     <footer className="mt-16 bg-white" data-testid="site-footer">
       <div className="border-t border-ink/10">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[15%_15%_15%_25%_30%]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[7fr_3fr_4fr_4fr_2fr]">
 
-          {/* Col 1 — About */}
+          {/* Col 1 — Connect (no heading). 40% width on lg+. */}
           <div>
-            <h3 className="font-display font-bold text-ink">About</h3>
-            <ul className="mt-4 space-y-2 text-sm">
-              <li><Link href="/"        className="text-ink/80 transition hover:text-primary">{SITE.name}</Link></li>
-              <li><Link href="/about"   className="text-ink/80 transition hover:text-primary">About</Link></li>
-              <li><Link href="/sitemap" className="text-ink/80 transition hover:text-primary">Sitemap</Link></li>
-              <li><Link href="/contact" className="text-ink/80 transition hover:text-primary">Contact</Link></li>
-            </ul>
-          </div>
-
-          {/* Col 2 — Products (placeholder, links to be added later) */}
-          <div>
-            <h3 className="font-display font-bold text-ink">Products</h3>
-          </div>
-
-          {/* Col 3 — Categories (heading only, links to be added later) */}
-          <div>
-            <h3 className="font-display font-bold text-ink">Categories</h3>
-          </div>
-
-          {/* Col 4 — Connect (no heading). On lg, sits in track 5; track 4 is
-               an empty 25% offset that pushes this column to the right. */}
-          <div className="lg:col-start-5">
             <p className="text-base font-medium leading-6 text-ink/70">{CONNECT_TAGLINE}</p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
@@ -78,6 +57,28 @@ export default function Footer() {
                 </svg>
               </a>
             </div>
+          </div>
+
+          {/* Col 2 — About. col-start-3 skips the empty 15% offset (track 2)
+              on lg+, so the right-hand cluster stays anchored to the right. */}
+          <div className="lg:col-start-3">
+            <h3 className="font-display font-bold text-ink">About</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/"        className="text-ink/80 transition hover:text-primary">Home</Link></li>
+              <li><Link href="/about"   className="text-ink/80 transition hover:text-primary">About</Link></li>
+              <li><Link href="/sitemap" className="text-ink/80 transition hover:text-primary">Sitemap</Link></li>
+              <li><Link href="/contact" className="text-ink/80 transition hover:text-primary">Contact</Link></li>
+            </ul>
+          </div>
+
+          {/* Col 3 — Categories (heading only, links to be added later) */}
+          <div>
+            <h3 className="font-display font-bold text-ink">Categories</h3>
+          </div>
+
+          {/* Col 4 — Products (placeholder, links to be added later) */}
+          <div>
+            <h3 className="font-display font-bold text-ink">Products</h3>
           </div>
         </div>
       </div>
