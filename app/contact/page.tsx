@@ -27,7 +27,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="bg-paper py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Send a message</p>
