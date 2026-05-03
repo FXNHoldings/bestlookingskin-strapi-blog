@@ -1,6 +1,13 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { listAllPostSlugs, listCategories, type BlsCategory } from '@/lib/strapi';
+import {
+  listAllPostSlugs,
+  listAllProductSlugs,
+  listCategories,
+  listProductCategories,
+  type BlsCategory,
+  type BlsProductCategory,
+} from '@/lib/strapi';
 import { SECTIONS, SITE } from '@/lib/site';
 import { fmtDate } from '@/lib/format';
 
@@ -13,11 +20,19 @@ export const metadata: Metadata = {
 };
 
 type PostSlug = { slug: string; category: string; updatedAt: string };
+type ProductSlug = { slug: string; updatedAt: string };
 
 export default async function HtmlSitemapPage() {
-  const [posts, cmsCats]: [PostSlug[], BlsCategory[]] = await Promise.all([
+  const [posts, products, cmsCats, productCats]: [
+    PostSlug[],
+    ProductSlug[],
+    BlsCategory[],
+    BlsProductCategory[],
+  ] = await Promise.all([
     listAllPostSlugs().catch(() => [] as PostSlug[]),
+    listAllProductSlugs().catch(() => [] as ProductSlug[]),
     listCategories().catch(() => [] as BlsCategory[]),
+    listProductCategories().catch(() => [] as BlsProductCategory[]),
   ]);
 
   // Group posts by their primary category slug for the listing
@@ -63,10 +78,80 @@ export default async function HtmlSitemapPage() {
               <SiteLink href="/">Home</SiteLink>
               <SiteLink href="/about">About us</SiteLink>
               <SiteLink href="/contact">Contact us</SiteLink>
+              <SiteLink href="/products">Products</SiteLink>
+              <SiteLink href="/brands">Brands</SiteLink>
               <SiteLink href="/search">Search</SiteLink>
               <SiteLink href="/feed.xml">RSS feed</SiteLink>
               <SiteLink href="/sitemap.xml">XML sitemap</SiteLink>
             </ul>
+          </div>
+
+          <hr className="my-12 border-ink/10" />
+
+          {/* Product categories + products */}
+          <div className="grid gap-10 lg:grid-cols-[1fr_3fr] lg:gap-16">
+            <div>
+              <h2 className="font-display font-bold text-ink">Product categories &amp; products</h2>
+              <p className="mt-2 text-sm text-ink/55">
+                {products.length} products across {productCats.length} product categories.
+              </p>
+            </div>
+            <div className="space-y-10">
+              {productCats.length > 0 && (
+                <div data-testid="sitemap-product-categories">
+                  <Link
+                    href="/products"
+                    className="group inline-flex items-baseline gap-3 font-display font-bold text-ink hover:text-primary"
+                  >
+                    Product categories
+                    <span className="text-xs font-medium text-ink/45">{productCats.length} categories</span>
+                  </Link>
+                  <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                    {productCats.map((category) => (
+                      <li key={category.slug}>
+                        <Link
+                          href={`/products?category=${category.slug}`}
+                          className="group flex items-baseline justify-between gap-4 rounded-lg px-3 py-2 transition hover:bg-paper"
+                        >
+                          <span className="truncate text-sm text-ink/80 group-hover:text-primary">
+                            {category.name}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {products.length > 0 && (
+                <div data-testid="sitemap-products">
+                  <Link
+                    href="/products"
+                    className="group inline-flex items-baseline gap-3 font-display font-bold text-ink hover:text-primary"
+                  >
+                    Products
+                    <span className="text-xs font-medium text-ink/45">{products.length} products</span>
+                  </Link>
+                  <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                    {products.map((product) => (
+                      <li key={product.slug}>
+                        <Link
+                          href={`/products/${product.slug}`}
+                          className="group flex items-baseline justify-between gap-4 rounded-lg px-3 py-2 transition hover:bg-paper"
+                        >
+                          <span className="truncate text-sm text-ink/80 group-hover:text-primary">
+                            {humanizeSlug(product.slug)}
+                          </span>
+                          <span className="shrink-0 text-[11px] text-ink/40">
+                            {fmtDate(product.updatedAt)}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           <hr className="my-12 border-ink/10" />

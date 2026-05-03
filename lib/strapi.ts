@@ -359,3 +359,22 @@ export async function listAllPostSlugs(): Promise<{ slug: string; category: stri
   }
   return all;
 }
+
+export async function listAllProductSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+  const all: { slug: string; updatedAt: string }[] = [];
+  let page = 1;
+  while (true) {
+    const res = await strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+      fields: ['slug', 'updatedAt'],
+      sort: ['publishedAt:desc'],
+      pagination: { page, pageSize: 100 },
+    });
+    for (const p of res.data) {
+      all.push({ slug: p.slug, updatedAt: p.updatedAt });
+    }
+    const pageCount = res.meta?.pagination?.pageCount ?? 1;
+    if (page >= pageCount) break;
+    page++;
+  }
+  return all;
+}
