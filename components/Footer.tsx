@@ -25,7 +25,7 @@ export default async function Footer() {
   return (
     <footer className="mt-16 bg-white" data-testid="site-footer">
       <div className="border-t border-ink/10">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[55%_15%_15%_15%]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[35%_20%_15%_15%_15%]">
 
           {/* Col 1 — Connect (no heading). */}
           <div>
@@ -72,7 +72,7 @@ export default async function Footer() {
           </div>
 
           {/* Col 2 — About. */}
-          <div>
+          <div className="lg:col-start-3">
             <h4 className="font-display !text-[18px] font-bold text-ink">About</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/"        className="text-ink/80 transition hover:text-primary">Home</Link></li>
