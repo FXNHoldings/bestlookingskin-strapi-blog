@@ -73,7 +73,7 @@ export default async function Footer() {
 
           {/* Col 2 — About. */}
           <div className="lg:col-start-3">
-            <h4 className="font-display !text-[18px] font-bold text-ink">About</h4>
+            <h4 className="font-display !text-[18px] font-bold text-ink">About Us</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/"        className="text-ink/80 transition hover:text-primary">Home</Link></li>
               <li><Link href="/about"   className="text-ink/80 transition hover:text-primary">About</Link></li>
