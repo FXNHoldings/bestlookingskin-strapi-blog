@@ -313,6 +313,11 @@ p {
   font-size: 1rem !important;
 }
 
+[data-testid="site-footer"] p {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+}
+
 ::selection {
   background: theme('colors.primary.emphasis');
   color: theme('colors.secondary.DEFAULT');
