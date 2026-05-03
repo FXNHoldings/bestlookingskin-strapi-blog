@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE, SECTIONS } from '@/lib/site';
+import { listCategories, listProductCategories, type BlsCategory, type BlsProductCategory } from '@/lib/strapi';
 
 const CONNECT_TAGLINE =
   'We believe in demystifying the science behind the products, breaking down complex ' +
@@ -8,14 +9,25 @@ const CONNECT_TAGLINE =
 
 const CONTACT_EMAIL = 'hello@bestlooking.skin';
 
-export default function Footer() {
+export default async function Footer() {
   const year = new Date().getFullYear();
+  const [postCategories, productCategories] = await Promise.all([
+    listCategories().catch(() =>
+      SECTIONS.map((section, index) => ({
+        id: index,
+        name: section.title,
+        slug: section.slug,
+      })) as BlsCategory[],
+    ),
+    listProductCategories().catch(() => [] as BlsProductCategory[]),
+  ]);
+
   return (
     <footer className="mt-16 bg-white" data-testid="site-footer">
       <div className="border-t border-ink/10">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[7fr_3fr_4fr_4fr_2fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_20%_20%_20%]">
 
-          {/* Col 1 — Connect (no heading). 40% width on lg+. */}
+          {/* Col 1 — Connect (no heading). */}
           <div>
             <p className="text-base font-medium leading-6 text-ink/70">{CONNECT_TAGLINE}</p>
             <a
@@ -59,9 +71,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2 — About. col-start-3 skips the empty 15% offset (track 2)
-              on lg+, so the right-hand cluster stays anchored to the right. */}
-          <div className="lg:col-start-3">
+          {/* Col 2 — About. */}
+          <div>
             <h4 className="font-display !text-[18px] font-bold text-ink">About</h4>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/"        className="text-ink/80 transition hover:text-primary">Home</Link></li>
@@ -71,14 +82,38 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3 — Categories (heading only, links to be added later) */}
+          {/* Col 3 — Post categories */}
           <div>
             <h4 className="font-display !text-[18px] font-bold text-ink">Categories</h4>
+            <ul className="mt-4 space-y-2 text-sm">
+              {postCategories.map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href={`/${category.slug}`}
+                    className="text-ink/80 transition hover:text-primary"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Col 4 — Products (placeholder, links to be added later) */}
+          {/* Col 4 — Product categories */}
           <div>
             <h4 className="font-display !text-[18px] font-bold text-ink">Products</h4>
+            <ul className="mt-4 space-y-2 text-sm">
+              {productCategories.map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href={`/products?category=${category.slug}`}
+                    className="text-ink/80 transition hover:text-primary"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

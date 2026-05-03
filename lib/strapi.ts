@@ -152,12 +152,24 @@ export type BlsProductCategory = {
   children?: { id: number; name: string; slug: string }[];
 };
 
+export type BlsProductBrand = {
+  id: number;
+  documentId?: string;
+  name: string;
+  slug: string;
+  description?: string;
+  websiteUrl?: string;
+  logo?: StrapiImage;
+  order?: number;
+};
+
 export type BlsProduct = {
   id: number;
   documentId?: string;
   name: string;
   slug: string;
   brand?: string;
+  brandRef?: BlsProductBrand | null;
   shortDescription?: string;
   description?: string;
   keyFeatures?: string[];
@@ -191,7 +203,7 @@ export type BlsProduct = {
   categories?: BlsProductCategory[];
 };
 
-const PRODUCT_POPULATE = ['primaryImage', 'gallery', 'categories'];
+const PRODUCT_POPULATE = ['primaryImage', 'gallery', 'categories', 'brandRef'];
 
 export async function listProducts(
   opts: {
@@ -208,7 +220,14 @@ export async function listProducts(
 ) {
   const filters: Record<string, unknown> = {};
   if (opts.category) filters.categories = { slug: { $eqi: opts.category } };
-  if (opts.brand) filters.brand = { $eqi: opts.brand };
+  const andFilters: Record<string, unknown>[] = [];
+  if (opts.brand) {
+    andFilters.push({ $or: [
+      { brand: { $eqi: opts.brand } },
+      { brandRef: { slug: { $eqi: opts.brand } } },
+      { brandRef: { name: { $eqi: opts.brand } } },
+    ] });
+  }
   if (opts.skinType) filters.skinTypes = { $contains: opts.skinType };
   if (opts.minPrice !== undefined) filters.currentPrice = { $gte: opts.minPrice };
   if (opts.maxPrice !== undefined) {
@@ -219,15 +238,17 @@ export async function listProducts(
   }
   if (opts.q?.trim()) {
     const q = opts.q.trim();
-    filters.$or = [
+    andFilters.push({ $or: [
       { name: { $containsi: q } },
       { brand: { $containsi: q } },
       { shortDescription: { $containsi: q } },
       { description: { $containsi: q } },
       { ingredients: { $containsi: q } },
       { categories: { name: { $containsi: q } } },
-    ];
+      { brandRef: { name: { $containsi: q } } },
+    ] });
   }
+  if (andFilters.length > 0) filters.$and = andFilters;
 
   const sortMap = {
     'newest':      ['publishedAt:desc'],
@@ -262,6 +283,49 @@ export async function listProductCategories(): Promise<BlsProductCategory[]> {
   return res.data;
 }
 
+export async function listProductBrands(): Promise<BlsProductBrand[]> {
+  try {
+    const res = await strapiFetch<ListResponse<BlsProductBrand>>('bls-product-brands', {
+      sort: ['order:asc', 'name:asc'],
+      populate: ['logo'],
+      pagination: { pageSize: 200 },
+    });
+    return res.data;
+  } catch {
+    return listLegacyProductBrands();
+  }
+}
+
+async function listLegacyProductBrands(): Promise<BlsProductBrand[]> {
+  const brands = new Set<string>();
+  let page = 1;
+
+  while (true) {
+    const res = await strapiFetch<ListResponse<Pick<BlsProduct, 'brand'>>>('bls-products', {
+      fields: ['brand'],
+      sort: ['brand:asc'],
+      pagination: { page, pageSize: 100 },
+    });
+
+    for (const product of res.data) {
+      const brand = product.brand?.trim();
+      if (brand) brands.add(brand);
+    }
+
+    const pageCount = res.meta?.pagination?.pageCount ?? 1;
+    if (page >= pageCount) break;
+    page++;
+  }
+
+  return Array.from(brands)
+    .sort((a, b) => a.localeCompare(b))
+    .map((name, index) => ({
+      id: index + 1,
+      name,
+      slug: name,
+    }));
+}
+
 export async function getProductCategory(slug: string): Promise<BlsProductCategory | null> {
   const res = await strapiFetch<ListResponse<BlsProductCategory>>('bls-product-categories', {
     filters: { slug: { $eqi: slug } },
@@ -270,6 +334,7 @@ export async function getProductCategory(slug: string): Promise<BlsProductCatego
   });
   return res.data?.[0] ?? null;
 }
+
 
 // =====================================================================
 

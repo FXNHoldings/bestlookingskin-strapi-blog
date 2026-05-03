@@ -9,14 +9,14 @@
   padding-right: 2rem !important;
 }
 
-/* Product titles inside the home page only — 14px / 500 weight.
+/* Product titles inside the home page only — 1rem / 600 weight.
    Scoped via [data-testid="home-page"] so other places using ProductCard
    (e.g. /products listing, related-products on a single product page)
    keep their default sizing. */
 [data-testid="home-page"] [data-testid^="product-"] h6,
 [data-testid="related-products"] [data-testid^="product-"] h6 {
   font-size: 16px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   line-height: 1.35 !important;
 }
 
@@ -30,14 +30,13 @@
 }
 
 [data-testid^="product-"] img,
-[data-testid="home-page"] [data-testid^="product-"] img,
-[data-testid="newhome-page"] [data-testid^="product-"] img {
+[data-testid="home-page"] [data-testid^="product-"] img {
   object-fit: contain !important;
 }
 
-/* Home-page image thumbnails — height 70% and centered via auto margins. */
+/* Home-page image thumbnails — height 80% and centered via auto margins. */
 [data-testid="home-page"] img {
-  height: 70%;
+  height: 80%;
   margin: auto;
 }
 
@@ -48,18 +47,18 @@
 }
 
 /* Articles section on the home page — compact post tiles:
-   hide excerpt paragraph and shrink title to 14px / 500 weight.
+   hide excerpt paragraph and set title to 1rem / 600 weight.
    .line-clamp-2 distinguishes the excerpt from the date paragraph. */
 [data-testid="articles"] [data-testid^="tile-"] h6 {
-  font-size: 8px !important;
-  font-weight: 500 !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
   line-height: 1.35 !important;
 }
 
 /* Post category pages (e.g. /skincare-how-to-guides) — tile titles. */
 [data-testid^="category-"] [data-testid^="tile-"] h6 {
-  font-size: 8px !important;
-  font-weight: 500 !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
   line-height: 1.35 !important;
 }
 
@@ -92,8 +91,8 @@
 /* Home hero heading — overrides the site-wide h2 sizing (1.5rem) so the
    tagline reads larger. Scoped so other h2s on the page stay 1.5rem. */
 [data-testid="home-hero"] h1 {
-  font-size: clamp(2.75rem, 1.5rem + 5.6vw, 6rem) !important;
-  line-height: 0.95 !important;
+  font-size: clamp(1.95rem, 1.55rem + 2vw, 3rem) !important;
+  line-height: 1.05 !important;
 }
 
 [data-testid="our-goal"] h2 {
@@ -112,7 +111,7 @@
    smaller than the default h3 scale so they sit alongside the eyebrow + grid
    without dominating. Stays fluid. */
 [data-testid="home-page"] section h3 {
-  font-size: clamp(1.125rem, 0.95rem + 0.85vw, 1.5rem) !important;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.875rem) !important;
   line-height: 1.25 !important;
 }
 
@@ -135,7 +134,7 @@
    overflow-hidden croppers. `rounded-full` is left alone so pill buttons
    and pagination dots stay round. */
 [data-testid="home-page"] img {
-  border-radius: 8px;
+  border-radius: 4px;
 }
 [data-testid="home-page"] .overflow-hidden,
 [data-testid="home-page"] .rounded,
@@ -144,7 +143,7 @@
 [data-testid="home-page"] .rounded-xl,
 [data-testid="home-page"] .rounded-2xl,
 [data-testid="home-page"] .rounded-3xl {
-  border-radius: 8px !important;
+  border-radius: 4px !important;
 }
 
 /* Category showcase images need to fill their tiles; the general homepage
@@ -156,6 +155,48 @@
 
 [data-testid="home-hero"] img {
   height: 100% !important;
+}
+
+[data-testid="home-hero"] .hero-side-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+[data-testid="welcome-intro"] .brand-welcome-title {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: fit-content;
+  color: theme('colors.ink') !important;
+  line-height: 0.94 !important;
+  text-shadow: 0 14px 35px rgb(7 20 43 / 0.08);
+}
+
+[data-testid="welcome-intro"] .brand-welcome-main {
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+[data-testid="welcome-intro"] .brand-welcome-sub {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55em;
+  margin-top: 0.18em;
+  color: #e33333;
+  font-size: 0.5em;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+}
+
+[data-testid="welcome-intro"] .brand-welcome-rule {
+  display: block;
+  width: 3.25em;
+  height: 0.08em;
+  border-radius: 999px;
+  background: #e33333;
 }
 
 /* Self-hosted Inter (variable woff2) — body / sans workhorse. */
@@ -245,10 +286,51 @@ html, body {
   background: theme('colors.paper');
   color: theme('colors.ink');
   font-family: var(--font-outfit);
+  font-feature-settings: 'cv11';
   font-weight: 300;
-  /* Fluid body type: 15.2px on a 320px viewport, 17px on a 1366px+ viewport. */
-  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem);
-  letter-spacing: 0.2px;
+  font-size: 1rem;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+body * {
+  font-family: var(--font-outfit) !important;
+}
+
+body :where(p, li, blockquote, figcaption, td, th, label, input, textarea, select) {
+  font-weight: 300 !important;
+}
+
+p {
+  font-size: 1rem !important;
+}
+
+::selection {
+  background: theme('colors.primary.emphasis');
+  color: theme('colors.secondary.DEFAULT');
+}
+
+img,
+button {
+  border-radius: 4px !important;
+}
+
+@layer components {
+  .editorial-h {
+    @apply font-display font-semibold leading-tight tracking-normal text-ink;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-primary-emphasis;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-md border border-forest-600/30 bg-forest-50 px-3 py-1 text-xs font-medium text-forest-900;
+  }
 }
 
 /* Modern fluid heading scale (1.25 ratio, "major third"). Each size scales
@@ -262,30 +344,29 @@ h4 { font-size: clamp(1.15rem,   0.99rem  + 0.8vw,   1.625rem) !important; line-
 h5 { font-size: clamp(1.05rem,   0.95rem  + 0.5vw,   1.3rem)   !important; line-height: 1.35 !important; }
 h6 { font-size: clamp(1rem,      0.92rem  + 0.4vw,   1.15rem)  !important; line-height: 1.4  !important; }
 
-/* All headings → Urbanist family + 0.2px tracking. Size is set by the fluid
-   scale above; weight is fixed at 700 for consistent heading rhythm. */
+/* Site heading system: Outfit, 600, zero letter spacing. */
 h1, h2, h3, h4, h5, h6,
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6 {
-  font-family: var(--font-urbanist) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.2px !important;
+  font-family: var(--font-outfit) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
 }
 
 /* Imported post bodies (WordPress + Elementor) ship inline `font-family`
    on heading children (<span>, <strong>, etc.). Force-override them so
-   every heading inside .post-content reads as Urbanist regardless of
+   every heading inside .post-content reads as Outfit regardless of
    nested inline styles. */
 .post-content h1, .post-content h2, .post-content h3,
 .post-content h4, .post-content h5, .post-content h6,
 .post-content h1 *, .post-content h2 *, .post-content h3 *,
 .post-content h4 *, .post-content h5 *, .post-content h6 * {
-  font-family: var(--font-urbanist) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.2px !important;
+  font-family: var(--font-outfit) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
 }
 
-/* Post body text → Outfit */
+/* Post body text follows the site Outfit body setting. */
 .post-content {
   font-family: var(--font-outfit);
   font-weight: 300;
@@ -420,31 +501,31 @@ article[data-testid^="post-"] .post-content table th {
 }
 
 /* "BUY NOW" buttons inside imported post bodies use Bootstrap's .btn-primary
-   and .btn-outline-primary from the vendored cegg-bootstrap stylesheet
-   (default Bootstrap blue). Override the per-button CSS variables to brand
-   blue (#1556ee) without touching Bootstrap's globals. */
+   and .btn-outline-primary from the vendored cegg-bootstrap stylesheet.
+   Override the per-button CSS variables to the OriginFacts blue scale without
+   touching Bootstrap's globals. */
 .post-content .btn-primary {
-  --bs-btn-bg: #1556ee;
-  --bs-btn-border-color: #1556ee;
-  --bs-btn-hover-bg: #0f43c0;
-  --bs-btn-hover-border-color: #0f43c0;
-  --bs-btn-active-bg: #0c389f;
-  --bs-btn-active-border-color: #0c389f;
-  --bs-btn-disabled-bg: #1556ee;
-  --bs-btn-disabled-border-color: #1556ee;
+  --bs-btn-bg: #014fd3;
+  --bs-btn-border-color: #014fd3;
+  --bs-btn-hover-bg: #0072de;
+  --bs-btn-hover-border-color: #0072de;
+  --bs-btn-active-bg: #0046be;
+  --bs-btn-active-border-color: #0046be;
+  --bs-btn-disabled-bg: #014fd3;
+  --bs-btn-disabled-border-color: #014fd3;
 }
 .post-content .btn-outline-primary {
-  --bs-btn-color: #1556ee;
-  --bs-btn-border-color: #1556ee;
-  --bs-btn-hover-bg: #1556ee;
-  --bs-btn-hover-border-color: #1556ee;
-  --bs-btn-active-bg: #1556ee;
-  --bs-btn-active-border-color: #1556ee;
-  --bs-btn-disabled-color: #1556ee;
-  --bs-btn-disabled-border-color: #1556ee;
+  --bs-btn-color: #014fd3;
+  --bs-btn-border-color: #014fd3;
+  --bs-btn-hover-bg: #014fd3;
+  --bs-btn-hover-border-color: #014fd3;
+  --bs-btn-active-bg: #014fd3;
+  --bs-btn-active-border-color: #014fd3;
+  --bs-btn-disabled-color: #014fd3;
+  --bs-btn-disabled-border-color: #014fd3;
 }
 .post-content .text-bg-primary {
-  background-color: #1556ee !important;
+  background-color: #014fd3 !important;
 }
 
 /* Cegg grid product card — soft elevation */
@@ -616,9 +697,9 @@ article[data-testid^="post-"][data-category="product-comparisons"] * {
    above the icon-lists in product roundups. */
 .post-content .gspb_heading {
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 30px 0 0 0;
-  font-family: var(--font-urbanist), system-ui, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
   color: theme('colors.ink');
 }
 /* When the GSPB heading is rendered as a real <h2>/<h3> (i.e. it's a major
@@ -683,9 +764,9 @@ article[data-testid^="post-"][data-category="product-comparisons"] * {
 }
 .post-content .gspb-progressbar_circle_value {
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 600;
   color: #111;
   z-index: 1;
   position: relative;
-  font-family: var(--font-urbanist), system-ui, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
 }

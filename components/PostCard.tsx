@@ -43,7 +43,7 @@ export default function PostCard({
             </Link>
           )}
           <Link href={href}>
-            <h6 className="mt-2 font-display text-[8px] font-medium leading-tight text-ink transition group-hover:text-primary">
+            <h6 className="mt-2 font-display text-[1rem] font-medium leading-tight text-ink transition group-hover:text-primary">
               {post.title}
             </h6>
           </Link>
@@ -78,7 +78,7 @@ export default function PostCard({
           </div>
           <div className="min-w-0">
             {cat && <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{cat.name}</p>}
-            <h6 className="mt-1 line-clamp-2 font-display text-[8px] font-medium leading-snug text-ink transition group-hover:text-primary">
+            <h6 className="mt-1 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
               {post.title}
             </h6>
             <p className="mt-2 text-xs text-ink/50">
@@ -108,7 +108,7 @@ export default function PostCard({
       <div className="mt-4">
         {cat && <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{cat.name}</p>}
         <Link href={href}>
-          <h6 className="mt-2 line-clamp-2 font-display text-[8px] font-medium leading-snug text-ink transition group-hover:text-primary">
+          <h6 className="mt-2 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
             {post.title}
           </h6>
         </Link>

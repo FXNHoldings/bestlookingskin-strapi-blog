@@ -1,25 +1,42 @@
 import Link from 'next/link';
-import { SITE } from '@/lib/site';
+import { SECTIONS, SITE } from '@/lib/site';
+import { listProductCategories } from '@/lib/strapi';
 
-/* Top-bar nav — labels are independent of lib/site.ts SECTIONS so the nav
-   can be tuned without changing how categories are titled elsewhere. The
-   "More Articles" entry is a dropdown trigger (no href) — its `children`
-   render in a hover/focus-within panel below the trigger. */
 type NavItem = {
   label: string;
   href?: string;
   children?: { label: string; href: string }[];
 };
 
-const NAV: NavItem[] = [
-  { label: 'Guides',               href: '/skincare-how-to-guides' },
-  { label: 'Reviews',              href: '/skincare-reviews-path-to-glowing-skin' },
-  { label: 'Comparisons',          href: '/best-product-comparisons' },
-  { label: 'Informative',          href: '/essential-guide-to-informative-articles' },
-  { label: 'Top Rated',            href: '/top-rated-skincare-for-glowing-skin' },
-];
+export default async function Header() {
+  const productCategories = await listProductCategories().catch(() => []);
+  const nav: NavItem[] = [
+    {
+      label: 'Products',
+      href: '/products',
+      children: [
+        { label: 'All Products', href: '/products' },
+        ...productCategories.map((category) => ({
+          label: category.name,
+          href: `/products?category=${encodeURIComponent(category.slug)}`,
+        })),
+      ],
+    },
+    { label: 'Brands', href: '/brands' },
+    {
+      label: 'Articles',
+      href: '/essential-guide-to-informative-articles',
+      children: [
+        { label: 'All Articles', href: '/essential-guide-to-informative-articles' },
+        ...SECTIONS.filter((section) => section.slug !== 'reviews').map((section) => ({
+          label: section.slug === 'skincare-reviews-path-to-glowing-skin' ? 'Product Reviews' : section.title,
+          href: `/${section.slug}`,
+        })),
+      ],
+    },
+    { label: 'Get in Touch', href: '/contact' },
+  ];
 
-export default function Header() {
   return (
     <header
       className="sticky top-0 z-50 border-b border-ink/10 bg-paper/95 backdrop-blur"
@@ -77,18 +94,18 @@ export default function Header() {
           />
         </form>
 
-        {/* Category nav — right-aligned via ml-auto on lg+, full-width below it
-            on smaller screens so links wrap onto their own row. */}
+        {/* Category nav: dropdowns are visible on desktop; smaller screens keep
+            horizontal scrolling so the top bar remains usable. */}
         <nav
-          className="order-3 ml-auto w-full overflow-x-auto lg:order-none lg:w-auto"
+          className="order-3 ml-auto w-full overflow-x-auto lg:order-none lg:w-auto lg:overflow-visible"
           data-testid="primary-nav"
           aria-label="Categories"
         >
-          <ul className="flex min-w-max items-center justify-end gap-x-1 text-base font-semibold capitalize tracking-normal">
-            {NAV.map((item) => {
+          <ul className="flex min-w-max items-center justify-end gap-x-4 text-base font-semibold capitalize tracking-normal">
+            {nav.map((item) => {
               const testId = `nav-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
               const linkClass =
-                'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-3 py-2 text-ink/85 transition-colors hover:text-primary';
+                'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-0 py-2 text-ink/85 transition-colors hover:text-primary';
               if (!item.children) {
                 return (
                   <li key={item.label}>

@@ -12,7 +12,7 @@ export const dynamicParams = true;
 const PAGE_SIZE = 12;
 
 // Reserved top-level routes that aren't categories — keep them out of this segment.
-const RESERVED = new Set(['about', 'search', 'feed.xml', 'sitemap.xml', 'robots.txt']);
+const RESERVED = new Set(['about', 'brands', 'search', 'newhome', 'feed.xml', 'sitemap.xml', 'robots.txt']);
 
 type Params = { category: string };
 type SearchParams = { page?: string };

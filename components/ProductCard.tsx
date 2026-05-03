@@ -7,14 +7,17 @@ export default function ProductCard({
   product,
   variant = 'tile',
   thumbBg = 'bg-white',
+  showCategory = true,
 }: {
   product: BlsProduct;
   variant?: Variant;
   thumbBg?: string;
+  showCategory?: boolean;
 }) {
   const img = mediaUrl(product.primaryImage ?? null);
   const href = `/products/${product.slug}`;
   const cat = product.categories?.[0];
+  const brandName = product.brandRef?.name || product.brand;
   const hasDiscount =
     product.originalPrice && product.currentPrice && product.originalPrice > product.currentPrice;
 
@@ -31,8 +34,8 @@ export default function ProductCard({
             )}
           </div>
           <div className="min-w-0">
-            {product.brand && <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{product.brand}</p>}
-            <h6 className="mt-1 line-clamp-2 font-display text-base font-medium leading-snug text-ink transition group-hover:text-primary">
+            {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-primary">{brandName}</p>}
+            <h6 className="mt-1 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
               {product.name}
             </h6>
             {product.currentPrice !== undefined && (
@@ -59,11 +62,11 @@ export default function ProductCard({
       </Link>
       <div className="mt-4">
         <div className="flex items-center justify-between gap-3">
-          {product.brand && <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{product.brand}</p>}
-          {cat && <p className="text-[11px] text-ink/45">{cat.name}</p>}
+          {brandName && <p className="text-[14px] font-bold uppercase tracking-wider text-primary">{brandName}</p>}
+          {showCategory && cat && <p className="text-[14px] text-ink/45">{cat.name}</p>}
         </div>
         <Link href={href}>
-          <h6 className="mt-2 line-clamp-2 font-display text-base font-medium leading-snug text-ink transition group-hover:text-primary">
+          <h6 className="mt-2 line-clamp-2 font-display text-[1rem] font-medium leading-snug text-ink transition group-hover:text-primary">
             {product.name}
           </h6>
         </Link>

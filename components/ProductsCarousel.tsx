@@ -13,7 +13,13 @@ const PER_PAGE = 5;
 const MAX = 10;
 const INTERVAL_MS = 5000;
 
-export default function ProductsCarousel({ products }: { products: BlsProduct[] }) {
+export default function ProductsCarousel({
+  products,
+  thumbBg = 'bg-white',
+}: {
+  products: BlsProduct[];
+  thumbBg?: string;
+}) {
   const items = products.slice(0, MAX);
   const pageCount = Math.max(1, Math.ceil(items.length / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -51,7 +57,13 @@ export default function ProductsCarousel({ products }: { products: BlsProduct[] 
                 aria-hidden={i !== page}
               >
                 {slice.map((p) => (
-                  <ProductCard key={p.id} product={p} variant="tile" thumbBg="bg-white" />
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    variant="tile"
+                    thumbBg={thumbBg}
+                    showCategory={false}
+                  />
                 ))}
               </div>
             );
