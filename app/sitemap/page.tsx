@@ -73,7 +73,7 @@ export default async function HtmlSitemapPage() {
         <div className="mx-auto max-w-7xl px-6">
           {/* Top-level pages */}
           <div className="grid gap-10 lg:grid-cols-[1fr_3fr] lg:gap-16">
-            <h2 className="font-display font-bold text-ink">Pages</h2>
+            <h3 className="font-display font-bold text-ink">Pages</h3>
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <SiteLink href="/">Home</SiteLink>
               <SiteLink href="/about">About us</SiteLink>
@@ -91,7 +91,7 @@ export default async function HtmlSitemapPage() {
           {/* Product categories + products */}
           <div className="grid gap-10 lg:grid-cols-[1fr_3fr] lg:gap-16">
             <div>
-              <h2 className="font-display font-bold text-ink">Product categories &amp; products</h2>
+              <h3 className="font-display font-bold text-ink">Product categories &amp; products</h3>
               <p className="mt-2 text-sm text-ink/55">
                 {products.length} products across {productCats.length} product categories.
               </p>
@@ -159,7 +159,7 @@ export default async function HtmlSitemapPage() {
           {/* Categories + posts */}
           <div className="grid gap-10 lg:grid-cols-[1fr_3fr] lg:gap-16">
             <div>
-              <h2 className="font-display font-bold text-ink">Categories &amp; posts</h2>
+              <h3 className="font-display font-bold text-ink">Categories &amp; posts</h3>
               <p className="mt-2 text-sm text-ink/55">
                 {posts.length} posts across {orderedCats.filter((c) => byCat.get(c.slug)?.length).length} categories.
               </p>
