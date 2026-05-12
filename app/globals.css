@@ -366,9 +366,9 @@ html, body {
   color: theme('colors.ink');
   font-family: var(--font-inter);
   font-feature-settings: 'cv11';
-  font-weight: 300;
-  font-size: 1rem;
-  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 0.3px;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -378,14 +378,17 @@ html, body {
 body,
 body * {
   font-family: var(--font-inter) !important;
+  font-weight: 400;
 }
 
 body :where(p, li, blockquote, figcaption, td, th, label, input, textarea, select) {
-  font-weight: 300 !important;
+  font-weight: 400 !important;
 }
 
 p {
-  font-size: 1rem !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.3px !important;
 }
 
 p[class*="uppercase"][class*="tracking"],
@@ -459,7 +462,7 @@ h1, h2, h3, h4, h5, h6,
 /* Post body text follows the site Outfit body setting. */
 .post-content {
   font-family: var(--font-inter);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* ---------------------------------------------------------------------------
@@ -474,13 +477,15 @@ h1, h2, h3, h4, h5, h6,
 
 .post-content {
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.7;
+  letter-spacing: 0.3px;
   color: theme('colors.ink');
 }
 
 .post-content :where(p, li, blockquote, figcaption, td) {
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: 0.3px;
 }
 
 /* Paragraphs / headings OUTSIDE GreenShift blocks (lists handled below) */

@@ -94,11 +94,6 @@ export default async function HomePage() {
     .then((r) => r.data)
     .catch(() => [] as BlsProduct[]);
 
-  // Facial Cleansers section — products in the bls-product-category 'facial-cleansers'
-  const facialCleanserProducts = await listProducts({ category: 'facial-cleansers', sort: 'newest', pageSize: 10 })
-    .then((r) => r.data)
-    .catch(() => [] as BlsProduct[]);
-
   // Top-section hero posts — pulled directly from Strapi so the hero updates
   // automatically when new posts are published.
   const heroPosts = await listPosts({ pageSize: 5 })
@@ -155,7 +150,6 @@ export default async function HomePage() {
           'facial-serums' — create that category in Strapi or via the importer
           (BLS_PRODUCT_CATEGORY=facial-serums) to populate it. */}
       <FacialSerumsSection products={facialSerumProducts} />
-      <FacialCleansersSection products={facialCleanserProducts} />
       <FirstStepSection />
       {articles.length > 0 && <ArticlesGrid posts={articles.slice(0, 5)} />}
     </div>
@@ -173,7 +167,7 @@ function Hero({ posts }: { posts: BlsPost[] }) {
         <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <h1 className="mt-3 max-w-3xl font-display text-ink">
-              Skincare research, routines and product reviews for confident choices.
+              Skincare research, Product reviews
             </h1>
           </div>
           <p className="max-w-md text-sm leading-7 text-ink/70 sm:text-base">
@@ -516,33 +510,6 @@ function FacialSerumsSection({ products }: { products: BlsProduct[] }) {
   );
 }
 
-/* ---------- FACIAL CLEANSERS — products carousel ---------- */
-
-function FacialCleansersSection({ products }: { products: BlsProduct[] }) {
-  return (
-    <section className="bg-paper py-16 sm:py-20" data-testid="facial-cleansers">
-      <div className="mx-auto max-w-7xl px-6">
-        <SectionHeader
-          eyebrow="Editor's pick"
-          title="Facial Cleansers"
-          subtitle="Wash, prep and reset — the first step in any solid routine."
-          viewAll="/products?category=facial-cleansers"
-        />
-        {products.length === 0 ? (
-          <div className="mt-10 rounded-3xl border border-dashed border-ink/15 bg-paper px-6 py-12 text-center text-sm text-ink/55">
-            No products in the <strong>Facial Cleansers</strong> product category yet —
-            create the category in Strapi (BLS · Product Category) or run the Apify importer with{' '}
-            <code className="rounded bg-white px-1.5 py-0.5">BLS_PRODUCT_CATEGORY=facial-cleansers</code>.
-          </div>
-        ) : (
-          <div className="mt-10 rounded-[1.75rem] px-4 py-6 sm:px-6">
-            <ProductsCarousel products={products} />
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
 
 /* ---------- SKINCARE-TYPE SECTIONS ---------- */
 
