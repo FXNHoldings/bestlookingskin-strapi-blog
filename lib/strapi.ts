@@ -249,7 +249,125 @@ export type BlsProduct = {
   categories?: BlsProductCategory[];
 };
 
-const PRODUCT_POPULATE = ['primaryImage', 'gallery', 'categories', 'brandRef'];
+type CommerceMerchant = {
+  id: number;
+  documentId?: string;
+  name: string;
+  slug: string;
+};
+
+type CommerceOffer = {
+  id: number;
+  documentId?: string;
+  title?: string;
+  price?: number;
+  originalPrice?: number;
+  currency?: string;
+  productUrl?: string;
+  affiliateUrl?: string;
+  availability?: 'in_stock' | 'out_of_stock' | 'preorder' | 'unknown';
+  merchantSku?: string;
+  source?: string;
+  lastCheckedAt?: string;
+  status?: string;
+  merchant?: CommerceMerchant | null;
+};
+
+type CommerceProduct = Omit<
+  BlsProduct,
+  | 'brandRef'
+  | 'categories'
+  | 'keyFeatures'
+  | 'skuOrModel'
+  | 'skinTypes'
+  | 'ingredients'
+  | 'primaryAffiliateUrl'
+  | 'sourceUrl'
+  | 'sourceMerchant'
+  | 'currentPrice'
+  | 'originalPrice'
+  | 'currency'
+  | 'lastPriceSyncAt'
+  | 'available'
+  | 'walmartPrice'
+  | 'walmartUrl'
+  | 'walmartLastSyncAt'
+  | 'ebayPrice'
+  | 'ebayUrl'
+  | 'ebayLastSyncAt'
+  | 'seoTitle'
+  | 'seoDescription'
+  | 'seoKeywords'
+> & {
+  brandRef?: BlsProductBrand | null;
+  categories?: BlsProductCategory[];
+  specs?: {
+    keyFeatures?: string[];
+    skinTypes?: string[];
+    ingredients?: string;
+    seoTitle?: string;
+    seoDescription?: string;
+    seoKeywords?: string;
+    sourceUrl?: string;
+    primaryAffiliateUrl?: string;
+  };
+  mpn?: string;
+  sku?: string;
+  offers?: CommerceOffer[];
+};
+
+const PRODUCT_POPULATE = {
+  primaryImage: true,
+  gallery: true,
+  categories: { populate: ['parent', 'children', 'image'] },
+  brandRef: { populate: ['logo'] },
+  offers: { populate: ['merchant'] },
+};
+
+function merchantSlug(offer?: CommerceOffer): string {
+  return offer?.merchant?.slug || '';
+}
+
+function normalizeCommerceProduct(product: CommerceProduct): BlsProduct {
+  const offers = product.offers ?? [];
+  const availableOffers = offers.filter((offer) => offer.status !== 'expired' && offer.availability !== 'out_of_stock');
+  const pricedOffers = availableOffers.filter((offer) => offer.price !== undefined);
+  const bestOffer = [...pricedOffers].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))[0] ?? availableOffers[0];
+  const amazonOffer = offers.find((offer) => merchantSlug(offer).startsWith('amazon')) ?? bestOffer;
+  const walmartOffer = offers.find((offer) => merchantSlug(offer) === 'walmart');
+  const ebayOffer = offers.find((offer) => merchantSlug(offer) === 'ebay');
+  const lastPriceSyncAt = offers
+    .map((offer) => offer.lastCheckedAt)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+
+  return {
+    ...product,
+    brand: product.brandRef?.name || product.brand,
+    keyFeatures: product.specs?.keyFeatures ?? [],
+    skuOrModel: product.mpn || product.sku,
+    skinTypes: product.specs?.skinTypes ?? [],
+    ingredients: product.specs?.ingredients,
+    primaryAffiliateUrl: amazonOffer?.affiliateUrl || amazonOffer?.productUrl || product.specs?.primaryAffiliateUrl,
+    sourceUrl: amazonOffer?.productUrl || product.specs?.sourceUrl,
+    sourceMerchant: merchantSlug(amazonOffer) || undefined,
+    currentPrice: amazonOffer?.price ?? bestOffer?.price,
+    originalPrice: amazonOffer?.originalPrice ?? bestOffer?.originalPrice,
+    currency: amazonOffer?.currency ?? bestOffer?.currency ?? 'USD',
+    lastPriceSyncAt,
+    available: bestOffer ? bestOffer.availability !== 'out_of_stock' : undefined,
+    walmartPrice: walmartOffer?.price,
+    walmartUrl: walmartOffer?.affiliateUrl || walmartOffer?.productUrl,
+    walmartLastSyncAt: walmartOffer?.lastCheckedAt,
+    ebayPrice: ebayOffer?.price,
+    ebayUrl: ebayOffer?.affiliateUrl || ebayOffer?.productUrl,
+    ebayLastSyncAt: ebayOffer?.lastCheckedAt,
+    seoTitle: product.specs?.seoTitle,
+    seoDescription: product.specs?.seoDescription,
+    seoKeywords: product.specs?.seoKeywords,
+  };
+}
 
 export async function listProducts(
   opts: {
@@ -274,14 +392,6 @@ export async function listProducts(
       { brandRef: { name: { $eqi: opts.brand } } },
     ] });
   }
-  if (opts.skinType) filters.skinTypes = { $contains: opts.skinType };
-  if (opts.minPrice !== undefined) filters.currentPrice = { $gte: opts.minPrice };
-  if (opts.maxPrice !== undefined) {
-    filters.currentPrice = Object.assign(
-      typeof filters.currentPrice === 'object' ? (filters.currentPrice as Record<string, unknown>) : {},
-      { $lte: opts.maxPrice },
-    );
-  }
   if (opts.q?.trim()) {
     const q = opts.q.trim();
     andFilters.push({ $or: [
@@ -289,7 +399,6 @@ export async function listProducts(
       { brand: { $containsi: q } },
       { shortDescription: { $containsi: q } },
       { description: { $containsi: q } },
-      { ingredients: { $containsi: q } },
       { categories: { name: { $containsi: q } } },
       { brandRef: { name: { $containsi: q } } },
     ] });
@@ -298,30 +407,41 @@ export async function listProducts(
 
   const sortMap = {
     'newest':      ['publishedAt:desc'],
-    'price-asc':   ['currentPrice:asc'],
-    'price-desc':  ['currentPrice:desc'],
+    'price-asc':   ['publishedAt:desc'],
+    'price-desc':  ['publishedAt:desc'],
     'rating-desc': ['rating:desc', 'ratingCount:desc'],
   };
 
-  return strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+  const res = await strapiFetch<ListResponse<CommerceProduct>>('commerce-products', {
     sort: sortMap[opts.sort ?? 'newest'],
     populate: PRODUCT_POPULATE,
     pagination: { page: opts.page ?? 1, pageSize: opts.pageSize ?? 24 },
     filters,
   });
+  let data = res.data.map(normalizeCommerceProduct);
+
+  if (opts.skinType) {
+    data = data.filter((product) => product.skinTypes?.some((skinType) => skinType.toLowerCase() === opts.skinType?.toLowerCase()));
+  }
+  if (opts.minPrice !== undefined) data = data.filter((product) => (product.currentPrice ?? Infinity) >= opts.minPrice!);
+  if (opts.maxPrice !== undefined) data = data.filter((product) => (product.currentPrice ?? 0) <= opts.maxPrice!);
+  if (opts.sort === 'price-asc') data = [...data].sort((a, b) => (a.currentPrice ?? Infinity) - (b.currentPrice ?? Infinity));
+  if (opts.sort === 'price-desc') data = [...data].sort((a, b) => (b.currentPrice ?? 0) - (a.currentPrice ?? 0));
+
+  return { ...res, data };
 }
 
 export async function getProduct(slug: string): Promise<BlsProduct | null> {
-  const res = await strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+  const res = await strapiFetch<ListResponse<CommerceProduct>>('commerce-products', {
     filters: { slug: { $eq: slug } },
     populate: PRODUCT_POPULATE,
     pagination: { pageSize: 1 },
   });
-  return res.data?.[0] ?? null;
+  return res.data?.[0] ? normalizeCommerceProduct(res.data[0]) : null;
 }
 
 export async function listProductCategories(): Promise<BlsProductCategory[]> {
-  const res = await strapiFetch<ListResponse<BlsProductCategory>>('bls-product-categories', {
+  const res = await strapiFetch<ListResponse<BlsProductCategory>>('commerce-categories', {
     sort: ['order:asc', 'name:asc'],
     populate: ['parent', 'children', 'image'],
     pagination: { pageSize: 100 },
@@ -331,7 +451,7 @@ export async function listProductCategories(): Promise<BlsProductCategory[]> {
 
 export async function listProductBrands(): Promise<BlsProductBrand[]> {
   try {
-    const res = await strapiFetch<ListResponse<BlsProductBrand>>('bls-product-brands', {
+    const res = await strapiFetch<ListResponse<BlsProductBrand>>('commerce-brands', {
       sort: ['order:asc', 'name:asc'],
       populate: ['logo'],
       pagination: { pageSize: 200 },
@@ -347,7 +467,7 @@ async function listLegacyProductBrands(): Promise<BlsProductBrand[]> {
   let page = 1;
 
   while (true) {
-    const res = await strapiFetch<ListResponse<Pick<BlsProduct, 'brand'>>>('bls-products', {
+    const res = await strapiFetch<ListResponse<Pick<BlsProduct, 'brand'>>>('commerce-products', {
       fields: ['brand'],
       sort: ['brand:asc'],
       pagination: { page, pageSize: 100 },
@@ -373,7 +493,7 @@ async function listLegacyProductBrands(): Promise<BlsProductBrand[]> {
 }
 
 export async function getProductCategory(slug: string): Promise<BlsProductCategory | null> {
-  const res = await strapiFetch<ListResponse<BlsProductCategory>>('bls-product-categories', {
+  const res = await strapiFetch<ListResponse<BlsProductCategory>>('commerce-categories', {
     filters: { slug: { $eqi: slug } },
     populate: ['parent', 'children', 'image'],
     pagination: { pageSize: 1 },
@@ -410,7 +530,7 @@ export async function listAllProductSlugs(): Promise<{ slug: string; updatedAt: 
   const all: { slug: string; updatedAt: string }[] = [];
   let page = 1;
   while (true) {
-    const res = await strapiFetch<ListResponse<BlsProduct>>('bls-products', {
+    const res = await strapiFetch<ListResponse<BlsProduct>>('commerce-products', {
       fields: ['slug', 'updatedAt'],
       sort: ['publishedAt:desc'],
       pagination: { page, pageSize: 100 },

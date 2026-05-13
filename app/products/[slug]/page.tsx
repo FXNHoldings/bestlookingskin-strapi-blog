@@ -226,7 +226,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                 ) : product.shortDescription ? (
                   <p>{product.shortDescription}</p>
                 ) : (
-                  <p className="italic text-ink/50">No key features yet — add them in Strapi → BLS · Product → Key features.</p>
+                  <p className="italic text-ink/50">No key features yet — add them in Strapi → Commerce · Product → Specs → keyFeatures.</p>
                 )}
               </div>
 
